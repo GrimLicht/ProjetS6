@@ -5,7 +5,7 @@
 #include "ext.cpp"
 
 #include "gestionnaireMemoire.hpp"
-//#include "MainWindow.hpp"
+#include "MainWindow.hpp"
 
 #include <iostream>
 #include <eigen3/Eigen/Dense>
@@ -56,7 +56,7 @@ class Reseau
 	MatrixXd calculDelta2(VectorXd delta, MatrixXd poids);
 	void miseAJour(MatrixXd delta, VectorXd activation);
 	bool retropropagation();
-	void entrainement(vector<double *pixel> setFichiers);
+	void entrainement(vector<double*> setFichiers);
 
 };
 

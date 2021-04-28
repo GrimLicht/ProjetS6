@@ -14,9 +14,6 @@ using namespace Eigen;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-
-
-
 class Couche
 {
 	friend class Reseau;
@@ -28,9 +25,7 @@ class Couche
 	VectorXd vActivation;
 	MatrixXd mPoids;
 
-
 	public:
-
 	//Constructeurs/Destructeur
 	Couche (int nbNeurones, MatrixXd mPoids, VectorXd vBiais);
 	Couche(int nbNeurones, VectorXd vBiais);

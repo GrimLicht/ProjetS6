@@ -10,24 +10,21 @@
 #include <vector>
 using namespace Eigen;
 using namespace std;
- 
 
 
-Reseau::Reseau(Parametres p){
+Reseau::Reseau(Parametres p)
+{
 	this->typeSim = p.typeSim;
 	this->nbCouches = p.nbCouches;
 	this->tauxApprentissage = p.tauxApprentissage;
 	this->vCouches.resize(this->nbCouches);
 	
 	//Couche d'entrée
-	
 	this->vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesEntree, p.nbNeuronesCache), aleaBiais(p.nbNeuronesEntree)));
 	
 	//Couches cachées-1
-	for(int i = 1; i < (this->nbCouches-2); i++){
-		
+	for(int i = 1; i < (this->nbCouches-2); i++)
 		this->vCouches.emplace_back(Couche(p.nbNeuronesCache, aleaPoids(p.nbNeuronesCache, p.nbNeuronesCache), aleaBiais(p.nbNeuronesCache)));
-	}
 	
 	//Couche cachée; avant-dernière
 	int i = 1;//ajout
@@ -38,7 +35,8 @@ Reseau::Reseau(Parametres p){
 	
 }
 
-Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais){
+Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
+{
 	this->typeSim = p.typeSim;
 	this->nbCouches = p.nbCouches;
 	this->tauxApprentissage = p.tauxApprentissage;
@@ -49,8 +47,8 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais){
 	this->vCouches.emplace_back(Couche(p.nbNeuronesEntree, mPoids[0], vBiais[0]));
 	
 	//Couches cachées-1
-	for(int i = 1; i < (this->nbCouches-2); i++){
-		
+	for(int i = 1; i < (this->nbCouches-2); i++)
+	{
 		this->vCouches.emplace_back(Couche(p.nbNeuronesCache, mPoids[i], vBiais[i]));
 	}
 	
@@ -62,16 +60,13 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais){
 }
 
 //Destructeur
-Reseau::~Reseau(){
-	
-}
+Reseau::~Reseau(){}
 
 //Getteurs
-unsigned int Reseau::getNbCouches(){
-	return this->nbCouches;
-};
+unsigned int Reseau::getNbCouches(){return this->nbCouches;};
 
-vector<MatrixXd> Reseau::getPoids(){
+vector<MatrixXd> Reseau::getPoids()
+{
 	vector<MatrixXd> poids;
 	poids.resize(this->nbCouches);//mettre taille  au vec
 	
@@ -82,11 +77,14 @@ vector<MatrixXd> Reseau::getPoids(){
 };
 
 //Méthodes du RNU
-int Reseau::max(VectorXd sorties){ //permet d'avoir l'indice de la valeur max
+int Reseau::max(VectorXd sorties) //permet d'avoir l'indice de la valeur max
+{ 
 	int max = 0;
 	int indice = -1;
-	for (int i = 0; i < (sorties.size()); i++){ 
-		if(max < sorties[i]){
+	for (int i = 0; i < (sorties.size()); i++)
+	{ 
+		if(max < sorties[i])
+		{
 			max = sorties[i];
 			indice = i;
 		}
@@ -94,8 +92,9 @@ int Reseau::max(VectorXd sorties){ //permet d'avoir l'indice de la valeur max
 	return indice;
 }
 
-int Reseau::simulation(VectorXd entrees){ /*applique la propa + max */
-    VectorXd v;
-    v = this->propagation(entrees);
-    return this->max(v); 
+int Reseau::simulation(VectorXd entrees) /*applique la propa + max */
+{ 
+	VectorXd v;
+	v = this->propagation(entrees);
+	return this->max(v); 
 }

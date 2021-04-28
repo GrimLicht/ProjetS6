@@ -6,32 +6,11 @@
 #include <fstream>
 #include <memory>
 
-void compression(Eigen::MatrixXd *aCompresser, int nbNeurones)
-{
-	int row = aCompresser->rows();
-	int col = aCompresser->cols(); 
-	
-	while(row*col > nbNeurones)
-	{
-		row--; col--;
-		Eigen::MatrixXd compressee = Eigen::MatrixXd::Zero(row, col);
-		for(int i = 0; i < row; i++)
-		{
-			for(int j = 0; j < col; j++) 
-				compressee(i,j) = ((*aCompresser)(i,j) + (*aCompresser)(i+1,j) + (*aCompresser)(i,j+1) + (*aCompresser)(i+1,j+1))/4; 
-		}
-		*aCompresser = compressee;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
-	}
-}
+#include "couche.hpp"
+#include "gestionnaireMemoire.hpp"
+#include "reseau.hpp"
+#include "MainWindow.hpp"
 
-void remplissage(Eigen::MatrixXd *aRemplir)
-{
-	int row = aRemplir->rows() + 1;
-	int col = aRemplir->cols() + 1;
-	Eigen::MatrixXd remplie = Eigen::MatrixXd::Zero(row, col);
-	remplie.block(0,0,row-1, col-1) = aRemplir->block(0,0,row-1, col-1);
-	*aRemplir = remplie;
-}
 
 int main()
 {

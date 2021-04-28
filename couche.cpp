@@ -24,10 +24,7 @@ Couche::Couche(int nbNeurones, VectorXd vBiais)
 
 }
 
-Couche::~Couche()
-{
-	
-}
+Couche::~Couche(){} //A enlever
 
 //Setters/Getters
 unsigned int Couche::getNbNeurones()
