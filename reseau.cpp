@@ -64,6 +64,7 @@ Reseau::~Reseau(){}
 
 //Getteurs
 unsigned int Reseau::getNbCouches(){return this->nbCouches;};
+vector<unsigned int> Reseau::getStats(){return this->stats;};
 
 vector<MatrixXd> Reseau::getPoids()
 {

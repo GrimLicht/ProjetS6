@@ -1,6 +1,9 @@
 #ifndef GESTIONNAIRE_HPP
 #define GESTIONNAIRE_HPP
 
+#include "reseau.hpp"
+#include "MainWindow.hpp"
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "iostream"
@@ -79,7 +82,7 @@ Image remplissage (unsigned int nbNeurones);
 //VectorXd allPixelMNIST(Mnist m); 
 //string recupCheminAcces(QString chemin);
 //void sauvegardeRN(Reseau r);
-//void sauvegardeStat(Reseau r);
+void sauvegardeStat(Reseau r);
 
 
 #endif /* GestionnaireMemoire_hpp */
