@@ -1,8 +1,8 @@
-#ifndef Reseau_hpp
-#define Reseau_hpp
+#ifndef RESEAU_HPP
+#define RESEAU_HPP
 
 #include "couche.hpp"
-#include "ext.cpp"
+#include "ext.hpp"
 
 #include "gestionnaireMemoire.hpp"
 #include "MainWindow.hpp"
@@ -21,7 +21,6 @@ using namespace std;
 
 class Reseau
 {
-
 	private :
 	unsigned int nbCouches;
 	vector<Couche> vCouches;
@@ -33,16 +32,18 @@ class Reseau
 	public:
 	//Constructeurs/Destructeur
 	Reseau(Parametres p);
-	Reseau(Parametres p, vector<MatrixXd> mpoids, vector<VectorXd> vbiais);
+	Reseau(Parametres p, std::vector<MatrixXd> mpoids, std::vector<VectorXd> vbiais);
 	~Reseau();
 
 	//Setters/Getters
 	unsigned int getNbCouches();
 	vector<MatrixXd> getPoids();
 
-
+	//Methode de tests
+	void printReseau();
+	
 	//Méthodes de RNU
-	double sigmoide(double entree);
+	//double sigmoide(double entree);
 	int max(VectorXd sorties);
 	VectorXd propagation(VectorXd entrees);
 	int simulation(VectorXd entrees);

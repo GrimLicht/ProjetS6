@@ -1,13 +1,4 @@
-#include <eigen3/Eigen/Dense>
-#include <vector>
-#include <string>
-#include <cstdlib>
-#include <ctime>
-#include <map>
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <algorithm>
+#include "ext.hpp"
 
 using namespace std;
 using namespace Eigen;
@@ -17,42 +8,37 @@ map<int,string> mapAnimaux;
 map<int,char> mapChar;
 map<int,char> mapInt;
 
-//Structure Parametres
-typedef struct Parametres
-{
-	unsigned int typeSim;
-	unsigned int nbCouches;
-	unsigned int nbNeuronesEntree;
-	unsigned int nbNeuronesCache;
-	unsigned int nbNeuronesSortie;
-	double tauxApprentissage;
-}Parametres;
-
+//Fonctions aléatoires
 VectorXd aleaBiais(int nbNeurones){
-	VectorXd vB(nbNeurones);
-	srand(time(NULL));
-	for(int i = 0; i < nbNeurones; i++){
-		vB(i) = ( rand() /rand() )% 1;
-	}
-	return vB;
+    VectorXd vB(nbNeurones);
+    std::uniform_real_distribution<double> unif(0, 1);
+    std::default_random_engine re;
+    
+    for(int i = 0; i < nbNeurones; i++){
+        vB(i) = unif(re);
+    }
+    return vB;
 }
 
 MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants){
-	MatrixXd mP(nbNeurones, nbNeuronesSuivants);
-	srand(time(NULL));
-	for(int i = 0; i < nbNeurones; i++){
-		for(int j = 0; j < nbNeuronesSuivants; j++){
-			mP(i,j) = (rand() /rand()) % 1;
-		}
-	}
-	return mP;
+    MatrixXd mP(nbNeurones, nbNeuronesSuivants);
+    std::uniform_real_distribution<double> unif(0, 1);
+    std::default_random_engine re;
+    
+    for(int i = 0; i < nbNeurones; i++){
+        for(int j = 0; j < nbNeuronesSuivants; j++){
+            
+            mP(i,j) = unif(re);
+        }
+    }
+    return mP;
 }
  
 void compression(MatrixXd *aCompresser, int nbNeurones)
 {
 	int row = aCompresser->rows();
 	int col = aCompresser->cols(); 
-	
+
 	while(row*col > nbNeurones)
 	{
 		row--; col--;

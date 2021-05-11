@@ -1,4 +1,4 @@
-#include "ext.cpp"
+#include "ext.hpp"
 #include "couche.hpp"
 #include <iostream>
 #include <eigen3/Eigen/Dense>
@@ -20,8 +20,7 @@ Couche::Couche(int nbNeurones, VectorXd vBiais)
 {
 	this->nbNeurones = nbNeurones;
 	this->vBiais = vBiais;
-	this->mPoids.Constant(nbNeurones, -1);
-
+	this->mPoids.Constant(nbNeurones, 1, -1); //HERE IS THE ERROR
 }
 
 Couche::~Couche(){} //A enlever
@@ -31,10 +30,3 @@ unsigned int Couche::getNbNeurones()
 {
 	return nbNeurones;
 }
-
-
-
-
-
-
-

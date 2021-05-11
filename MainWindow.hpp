@@ -20,16 +20,6 @@
 using namespace QtCharts;
 using namespace std;
 
-typedef struct Parametres
-{
-	unsigned int typeSim;
-	unsigned int nbCouches;
-	unsigned int nbNeuronesEntree;
-	unsigned int nbNeuronesCache;
-	unsigned int nbNeuronesSortie;
-	double tauxApprentissage;
-}Parametres ;
-
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT

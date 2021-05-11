@@ -1,6 +1,8 @@
 #ifndef GESTIONNAIRE_HPP
 #define GESTIONNAIRE_HPP
 
+#include "reseau.hpp"
+#include "couche.hpp"
 #include "stdio.h"
 #include "stdlib.h"
 #include "iostream"

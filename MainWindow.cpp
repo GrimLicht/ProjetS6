@@ -16,7 +16,7 @@
 #include <eigen3/Eigen/Dense>
 #include <QFrame>
 #include <QVBoxLayout>
-#include <QCategoryAxis>
+//#include <QCategoryAxis>
 #include <QBoxLayout>
 #include <QAbstractButton>
 
@@ -90,7 +90,7 @@ MainWindow::MainWindow()
 	f4->setFrameShape(QFrame::Panel);  //effet sur la frame
 	f4->setFrameShadow(QFrame::Raised);//effet sur la frame
 	graphe = new QBoxLayout(QBoxLayout::LeftToRight,this);
-	graphe->addWidget(affGraphe("trt"));
+//	graphe->addWidget(affGraphe("trt"));
 	f4->setLayout(graphe);
 
 	grapheMatrice = new QVBoxLayout(this);
@@ -145,8 +145,6 @@ QChartView* MainWindow::affGraphe(QString f)
 	q->append(4,10);*/
 
 	return chartView;
-
-
 }
 
 

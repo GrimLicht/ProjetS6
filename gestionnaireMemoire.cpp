@@ -305,8 +305,8 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 
 
 /* Permet de transférer les informations utiles de la structure BMPImageHeader à la structure Image */
-Image convertBitmapToImage(BitMapImageHeader b){
-	
+Image convertBitmapToImage(BitMapImageHeader b)
+{	
 	Image image;
 	//initialisation du height et width de la structure Image
 	image.Height=b.Height;

@@ -1,7 +1,7 @@
 #ifndef COUCHE_HPP
 #define COUCHE_HPP
 
-#include "ext.cpp"
+#include "ext.hpp"
 
 #include <iostream>
 #include <eigen3/Eigen/Dense>
@@ -35,9 +35,8 @@ class Couche
 	unsigned int getNbNeurones();
 
 	//Méthodes de RNU
-	MatrixXd aleaPoids();
-	MatrixXd aleaBiais();
-
+	//MatrixXd aleaPoids();
+	//MatrixXd aleaBiais();
 };
 
 #endif  //Couche_hpp 
