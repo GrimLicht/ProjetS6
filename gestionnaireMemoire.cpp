@@ -352,3 +352,13 @@ void sauvegardeStat(Reseau r)
 
 	txt.close();
 }
+
+VectorXd allPixelMNIST(Mnist m) {
+	VectorXd pixels(784);
+
+	for (int i = 0; i < 784; i++) {
+		pixels(i) << m.pixels[i];
+	}
+
+	return pixels;
+}
