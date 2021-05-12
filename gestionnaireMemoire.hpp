@@ -3,6 +3,8 @@
 
 #include "reseau.hpp"
 #include "couche.hpp"
+#include "MainWindow.hpp"
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "iostream"
@@ -78,10 +80,10 @@ Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(unsigned int nbNeurones);
 Image remplissage (unsigned int nbNeurones);
 //VectorXd allPixelsBitMap(Image i);
-//VectorXd allPixelMNIST(Mnist m); 
+VectorXd allPixelMNIST(Mnist m); 
 //string recupCheminAcces(QString chemin);
 //void sauvegardeRN(Reseau r);
-//void sauvegardeStat(Reseau r);
+void sauvegardeStat(Reseau r);
 
 
 #endif /* GestionnaireMemoire_hpp */

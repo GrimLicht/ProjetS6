@@ -38,6 +38,7 @@ class Reseau
 	//Setters/Getters
 	unsigned int getNbCouches();
 	vector<MatrixXd> getPoids();
+	vector<unsigned int> getStats();
 
 	//Methode de tests
 	void printReseau();

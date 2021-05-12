@@ -325,3 +325,40 @@ Image convertBitmapToImage(BitMapImageHeader b)
 	}
 	return image;
 }
+
+/*Permet de sauvegarder les statistiques de reussite du RN*/
+void sauvegardeStat(Reseau r)
+{
+	string chemin = MainWindow::getChemin().toStdString();
+
+	ofstream txt(chemin.c_str()/*, ios::app*/); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
+
+	if (txt)
+	{
+		vector<unsigned int> vecStats = r.getStats();
+		ostringstream streamStats;
+
+		if (!vecStats.empty())
+		{
+			copy(vecStats.begin(), vecStats.end()-1), //on recupere tous les elements sauf le dernier, pour eviter les char accidentels a la fin
+				ostream_iterator<unsigned int>(streamStats, ","));
+
+				streamStats << vecStats.back(); //on ajoute le dernier element, sans char a la fin
+		}
+		txt << streamStats << endl;
+	}
+	else
+		cout << "Erreur lors de l'ouverture du fichier\n";
+
+	txt.close();
+}
+
+VectorXd allPixelMNIST(Mnist m) {
+	VectorXd pixels(784);
+
+	for (int i = 0; i < 784; i++) {
+		pixels(i) << m.pixels[i];
+	}
+
+	return pixels;
+}
