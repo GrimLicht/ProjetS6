@@ -331,7 +331,7 @@ void sauvegardeStat(Reseau r)
 {
 	string chemin = MainWindow::getChemin().toStdString();
 
-	ofstream txt(chemin.c_str()/*, ios::app*/); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
+	ofstream txt(chemin.c_str(), ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
 
 	if (txt)
 	{
@@ -341,7 +341,7 @@ void sauvegardeStat(Reseau r)
 		if (!vecStats.empty())
 		{
 			copy(vecStats.begin(), vecStats.end()-1), //on recupere tous les elements sauf le dernier, pour eviter les char accidentels a la fin
-				ostream_iterator<unsigned int>(streamStats, ","));
+				ostream_iterator<unsigned int>(streamStats, "\n"));
 
 				streamStats << vecStats.back(); //on ajoute le dernier element, sans char a la fin
 		}
