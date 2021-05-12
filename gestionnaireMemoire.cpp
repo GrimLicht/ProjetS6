@@ -355,9 +355,11 @@ void sauvegardeStat(Reseau r)
 
 VectorXd allPixelMNIST(Mnist m) {
 	VectorXd pixels(784);
+	double pix;
 
 	for (int i = 0; i < 784; i++) {
-		pixels(i) << m.pixels[i];
+		pix = (double)m.pixels[i] / (double)255;
+		pixels[i] = pix;
 	}
 
 	return pixels;
