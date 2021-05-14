@@ -359,7 +359,7 @@ VectorXd allPixelMNIST(Mnist m) {
 
 	for (int i = 0; i < 784; i++) {
 		pix = (double)m.pixels[i] / (double)255;
-		pixels[i] = pix;
+		pixels(i) = pix;
 	}
 
 	return pixels;
