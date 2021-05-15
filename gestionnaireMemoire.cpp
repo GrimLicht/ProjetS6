@@ -99,11 +99,11 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 						}
 
 						if(valPixel>=0 && valPixel<=9){
-							cout << valPixel << "   ";
+							cout << valPixel << "	 ";
 						}
 
 						else if(valPixel >=10 && valPixel <=99){
-							cout << valPixel << "  ";
+							cout << valPixel << "	";
 						}
 
 						else if(valPixel >=100 && valPixel <= 999){
@@ -152,7 +152,7 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 			
 			//si le nombre alea et le numero de label i coincide alors on stocke dans l'étiquette de la structure MNIST
 			if(i==nbAlea){
-				cout << "Valeur label: " << (int)temp2 << endl;  
+				cout << "Valeur label: " << (int)temp2 << endl;	
 				 m.etiquette=(int)temp2;
 			}	
 			
@@ -188,7 +188,7 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		header->type=type;
 		cout << "Signature: "<< header->type << endl;
 
-		// lecture de la taille du file header  
+		// lecture de la taille du file header	
 		int size;
 		is.read(reinterpret_cast<char*>(&size), 4);
 		header->size=size;
@@ -218,7 +218,7 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		int width; 
 		is.read(reinterpret_cast<char*>(&width),4); 
 		image->Width=width;
-		cout << "Width: "  << image->Width << endl ; 
+		cout << "Width: "	<< image->Width << endl ; 
 
 		// lecture de la hauteur 
 		int height; 
@@ -238,7 +238,7 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		image->bitCount=numberOfBitPerPixel;
 		cout << "Number of bit per pixel: " << (int)image->bitCount << endl ; 
 
-		// lecture de la  compression du infoHeader
+		// lecture de la	compression du infoHeader
 		int compression ; 
 		is.read(reinterpret_cast<char*>(&compression),4) ; 
 		image->Compression=compression;
@@ -326,11 +326,12 @@ Image convertBitmapToImage(BitMapImageHeader b)
 	return image;
 }
 
-/*Permet de sauvegarder les statistiques de reussite du RN*/
-void sauvegardeStat(Reseau r)
-{
-	string chemin = MainWindow::getChemin().toStdString();
 
+
+
+/*Permet de sauvegarder les statistiques de reussite du RN*/
+/*void sauvegardeStat(Reseau r, string chemin)
+{
 	ofstream txt(chemin.c_str(), ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
 
 	if (txt)
@@ -340,27 +341,110 @@ void sauvegardeStat(Reseau r)
 
 		if (!vecStats.empty())
 		{
-			copy(vecStats.begin(), vecStats.end()-1), //on recupere tous les elements sauf le dernier, pour eviter les char accidentels a la fin
-				ostream_iterator<unsigned int>(streamStats, "\n"));
+			copy(vecStats.begin(), vecStats.end()-1, //on recupere tous les elements sauf le dernier, pour eviter les char accidentels a la fin
+					ostream_iterator<unsigned int>(streamStats, "\n"));
+			
 
-				streamStats << vecStats.back(); //on ajoute le dernier element, sans char a la fin
+				txt << vecStats.back(); //on ajoute le dernier element, sans char a la fin
 		}
-		txt << streamStats << endl;
+		//txt << streamStats;
+		txt << endl;
 	}
 	else
 		cout << "Erreur lors de l'ouverture du fichier\n";
 
 	txt.close();
-}
+}*/
 
 VectorXd allPixelMNIST(Mnist m) {
 	VectorXd pixels(784);
-	double pix;
 
-	for (int i = 0; i < 784; i++) {
-		pix = (double)m.pixels[i] / (double)255;
-		pixels(i) = pix;
+	for (int i = 0; i < 28; i++) {
+		for(int j = 0; j < 28; j++)
+		{
+			pixels[i] = m.pixels[i][j] / 255.0;
+		}
 	}
 
 	return pixels;
+}
+
+vector<VectorXd> allMNIST(string fImage, string fLabel, vector<int> *labels)
+{
+	vector<VectorXd> set(100);
+	for(int i = 0; i < 100; i++)
+	{
+		MNIST m = recupDonneesFileMNIST(fImage, fLabel);
+		VectorXd v(784);
+		v = allPixelMNIST(m);
+		set.push_back(v);
+		labels->push_back(m.etiquette);
+	}
+	return set;
+}
+
+vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
+{
+	// entraine => chien&chat => chat => chien
+	// entr => chiffre
+	
+	if (f == "chien&chat")
+	{
+		BitMapFileHeader fileheader;
+		BitMapImageHeader imageheader;
+		Image im;
+
+		//uniform_real_distribution<int> unif{0, 12499};
+		//default_random_engine re;
+		srand(time(0));
+
+		// pour bmpp
+		// rand pour aller dans les deux dossiers aléatoirement
+		string dirname;
+		vector<VectorXd> bmp;
+
+		for (int i = 0; i < 1000; i++)
+		{
+			int choix;
+			//choix = unif(re) % 2; // choix 0 ou 1 pour chien ou chat
+			choix = rand()%2;
+			if (choix == 0)		// le choix ça sera le label du coup
+			{
+			 dirname += "chat";
+			}
+			else
+			{
+			 dirname += "chien";
+			}
+			// dirname = to_string(choix);
+			// ouvrir le directory ou concatener avec string f => doss_entr/chien_ou_chat
+			string open;
+			open = f + "/" + dirname;
+			// un rand pour piocher aléatoirement dans le dossier et garder le nom du dossier à chaque
+			int alea = rand()%12499; //unif(re);
+			open = open + to_string(alea) + ".bmp";
+			// lecture du fichier
+			recupAnalyseDonneesBmp(open, &fileheader, &imageheader);
+			// conversion en struct image
+			im = convertBitmapToImage(imageheader);
+			// conversion en vectorXd
+			VectorXd vec1;
+			///////////////////////////vec1 = allPixelBitMap(im, nbneurones);
+
+			// remplir vector<vectorXd>
+			bmp.push_back(vec1);
+			// remplir vector<int> label
+			labels->push_back(choix);
+		}
+		return bmp;
+	}
+	/*else if()
+	{
+
+	}
+	else if()
+	{
+
+	}*/
+	else exit(1);
 }

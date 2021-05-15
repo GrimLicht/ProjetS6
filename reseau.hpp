@@ -57,8 +57,10 @@ class Reseau
 	bool verificationDelta(VectorXd delta);
 	MatrixXd calculDelta2(VectorXd delta, MatrixXd poids);
 	void miseAJour(MatrixXd delta, VectorXd activation);
-	bool retropropagation();
-	void entrainement(vector<double*> setFichiers);
+	bool retropropagation(VectorXd entree, VectorXd resultatattendu);
+	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);
+	VectorXd retourLabel(int label);
+	vector<VectorXd> allLabels(vector<int> labels);
 
 };
 

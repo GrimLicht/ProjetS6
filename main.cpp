@@ -48,9 +48,24 @@ int main(int argc, char **argv)
 	res.printReseau();
 
 	return 0;
-	//AUCUN AFFICHAGE TEST C'EST QUOI CA MEME
 
-	//Test MainWindow
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//AFFICHAGE TEST
+
 	/*QApplication app (argc, argv);
 	MainWindow w;
 	w.show();

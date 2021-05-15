@@ -9,9 +9,6 @@
 #include "stdlib.h"
 #include "iostream"
 #include "fstream"
-#include <ctime>
-#include <cstdlib>
-#include <cmath>
 
 using namespace std;
 
@@ -65,7 +62,7 @@ typedef struct Image Image;
 struct Mnist {
 	unsigned long Width ;
 	unsigned long Height ; 
-	int pixels[28][28];
+	double pixels[28][28];
 	int etiquette ;
 };
 typedef struct Mnist MNIST;
@@ -79,11 +76,12 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(unsigned int nbNeurones);
 Image remplissage (unsigned int nbNeurones);
-//VectorXd allPixelsBitMap(Image i);
+//VectorXd allPixelBitMap(Image i);
 VectorXd allPixelMNIST(Mnist m); 
 //string recupCheminAcces(QString chemin);
 //void sauvegardeRN(Reseau r);
-void sauvegardeStat(Reseau r);
+//void sauvegardeStat(Reseau r, string chemin);
+vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones);
 
 
 #endif /* GestionnaireMemoire_hpp */
