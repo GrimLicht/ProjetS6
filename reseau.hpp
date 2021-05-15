@@ -54,7 +54,7 @@ class Reseau
 	//Méthode d'apprentissage
 	double deriveeSigmoide(double sig);
 	VectorXd calculDelta1(VectorXd resultatAttendu);
-	VectorXd Reseau::calculDelta2(VectorXd delta, MatrixXd poids);
+	MatrixXd calculDelta2(VectorXd delta, MatrixXd poids);
 	void miseAJour(MatrixXd delta, VectorXd activation);
 	bool retropropagation(VectorXd entree, VectorXd resultatattendu);
 	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);

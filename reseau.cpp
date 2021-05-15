@@ -179,7 +179,7 @@ MatrixXd Reseau::calculDelta2(VectorXd delta, MatrixXd poids)
 
 	MatrixXd deltaMatrice(nbCouches, nbNeuronesMax); // matrice d'erreur
 	vector<VectorXd> deltaMatrice;
-	deltaMatrice.
+	//deltaMatrice.
 	
 	// copier le vecteur delta du calcul delta1
 	deltaMatrice.row(nbCouches-1) = delta; //on colle delta dans la derniere colonne
