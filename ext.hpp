@@ -28,6 +28,4 @@ Eigen::VectorXd aleaBiais(int nbNeurones);
 
 Eigen::MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants);
 
-std::stringstream hexStr(char* data, int len);
-
 #endif

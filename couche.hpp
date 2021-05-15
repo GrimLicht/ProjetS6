@@ -19,7 +19,7 @@ class Couche
 	friend class Reseau;
 	friend class ext;
 
-	private :
+	public :
 	unsigned int nbNeurones;
 	VectorXd vBiais;
 	VectorXd vActivation;

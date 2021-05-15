@@ -12,40 +12,45 @@ int main(int argc, char **argv)
 {
 	Parametres param;
 	param.typeSim = 1;
-	param.nbCouches = 6;
-	param.nbNeuronesEntree = 70;
-	param.nbNeuronesCache = 100;
-	param.nbNeuronesSortie = 10;
+	param.nbCouches = 4;
+	param.nbNeuronesEntree = 4;
+	param.nbNeuronesCache = 10;
+	param.nbNeuronesSortie = 2;
 	param.tauxApprentissage = 0.50;
 
 	Reseau res(param);
 
-	vector<MatrixXd> vPoids;
-	vector<VectorXd> vBiais;
-	//Couche d'entrée
-	vPoids.emplace_back(aleaPoids(param.nbNeuronesEntree, param.nbNeuronesCache));
-	vBiais.emplace_back(aleaBiais(param.nbNeuronesEntree));
 
-	//Couches cachées-1
-	for(int i = 1; i < (param.nbCouches-2); i++)
-	{
-		vPoids.emplace_back(aleaPoids(param.nbNeuronesCache, param.nbNeuronesCache));
-		vBiais.emplace_back(aleaBiais(param.nbNeuronesCache));
-	}
-	//Couche cachée; avant-dernière
-	int i = 1;//ajout
-	vPoids.emplace_back(aleaPoids(param.nbNeuronesCache, param.nbNeuronesSortie));
-	vBiais.emplace_back(aleaBiais(param.nbNeuronesCache));
-
-	//Couche de sortie
-	vBiais.emplace_back(aleaBiais(param.nbNeuronesSortie));
-	Reseau res2(param, vPoids, vBiais);
 
 	//MatrixXd wagon = aleaPoids(param.nbNeuronesCache, param.nbNeuronesSortie);
 	//std::cout << wagon << std::endl;
 
-	res2.printReseau();
-	res.printReseau();
+	//res.printReseau();
+
+	VectorXd propa; propa = aleaBiais(4);
+
+	std::cout << "L'ERREUR N'EST PAS ICI\n\n";
+
+	VectorXd resultat = res.propagation(propa);
+
+	std::cout << "\nActivation de la couche de sortie :\n" << resultat << std::endl;
+	VectorXd Attendu(2); Attendu << 1, 0;
+
+	bool verif = false;
+	while(!verif)
+	{
+		verif = res.retropropagation(propa, Attendu);
+		cout << "La propa est " << verif << endl;
+		//res.printReseau();
+	}
+
+	std::cout << "La retro a ete effectuee" << endl;
+
+	int Reponse = res.simulation(propa);
+
+	std::cout << "Le neurone de reponse est le : " << Reponse << std::endl;
+
+
 
 	return 0;
 

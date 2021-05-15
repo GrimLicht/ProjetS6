@@ -356,10 +356,20 @@ Image convertBitmapToImage(BitMapImageHeader b)
 	txt.close();
 }*/
 
+
+
+
+
+
+
+
+
+
 VectorXd allPixelMNIST(Mnist m) {
 	VectorXd pixels(784);
 
-	for (int i = 0; i < 28; i++) {
+	for (int i = 0; i < 28; i++) 
+	{
 		for(int j = 0; j < 28; j++)
 		{
 			pixels[i] = m.pixels[i][j] / 255.0;

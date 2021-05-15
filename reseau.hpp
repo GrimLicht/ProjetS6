@@ -21,7 +21,7 @@ using namespace std;
 
 class Reseau
 {
-	private :
+	public :
 	unsigned int nbCouches;
 	vector<Couche> vCouches;
 	vector<unsigned int> stats;
@@ -54,8 +54,7 @@ class Reseau
 	//Méthode d'apprentissage
 	double deriveeSigmoide(double sig);
 	VectorXd calculDelta1(VectorXd resultatAttendu);
-	bool verificationDelta(VectorXd delta);
-	MatrixXd calculDelta2(VectorXd delta, MatrixXd poids);
+	VectorXd Reseau::calculDelta2(VectorXd delta, MatrixXd poids);
 	void miseAJour(MatrixXd delta, VectorXd activation);
 	bool retropropagation(VectorXd entree, VectorXd resultatattendu);
 	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);
