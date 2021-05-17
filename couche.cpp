@@ -11,16 +11,18 @@ using namespace std;
 //Constructeurs/Destructeur
 Couche::Couche (int nbNeurones, MatrixXd mPoids, VectorXd vBiais)
 {
-	this-> nbNeurones = nbNeurones ;
-	this-> mPoids = mPoids;
-	this-> vBiais = vBiais;
+	this->nbNeurones = nbNeurones ;
+	this->mPoids = mPoids;
+	this->vBiais = vBiais;
+	this->error = new double[nbNeurones];
 }
 
 Couche::Couche(int nbNeurones, VectorXd vBiais)
 {
 	this->nbNeurones = nbNeurones;
 	this->vBiais = vBiais;
-	this->mPoids.Constant(nbNeurones, 1, -1); //HERE IS THE ERROR
+	this->mPoids.Constant(nbNeurones, 1, -1);
+	this->error = new double[nbNeurones];
 }
 
 Couche::~Couche(){} //A enlever

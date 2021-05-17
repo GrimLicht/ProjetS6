@@ -9,29 +9,37 @@ map<int,char> mapChar;
 map<int,char> mapInt;
 
 //Fonctions aléatoires
-VectorXd aleaBiais(int nbNeurones){
-    VectorXd vB(nbNeurones);
-    std::uniform_real_distribution<double> unif(0, 1);
-    std::default_random_engine re;
-    
-    for(int i = 0; i < nbNeurones; i++){
-        vB(i) = unif(re);
-    }
-    return vB;
+VectorXd aleaBiais(int nbNeurones)
+{	
+	std::uniform_real_distribution<double> unif(0.0, 1.0);
+	std::random_device rd;
+	std::default_random_engine re(rd());
+
+	VectorXd vB(nbNeurones);
+	//std::uniform_real_distribution<double> unif(0, 1);
+	//std::default_random_engine re;
+	
+	for(int i = 0; i < nbNeurones; i++){
+		vB(i) = unif(re);
+	}
+	return vB;
 }
 
-MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants){
-    MatrixXd mP(nbNeurones, nbNeuronesSuivants);
-    std::uniform_real_distribution<double> unif(0, 1);
-    std::default_random_engine re;
-    
-    for(int i = 0; i < nbNeurones; i++){
-        for(int j = 0; j < nbNeuronesSuivants; j++){
-            
-            mP(i,j) = unif(re);
-        }
-    }
-    return mP;
+MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants)
+{
+	MatrixXd mP(nbNeurones, nbNeuronesSuivants);
+	std::uniform_real_distribution<double> unif(0.0, 1.0);
+	std::random_device rd;
+	std::default_random_engine re(rd());
+	//return distribution(generator);
+	
+	for(int i = 0; i < nbNeurones; i++){
+		for(int j = 0; j < nbNeuronesSuivants; j++){
+			
+			mP(i,j) = unif(re);
+		}
+	}
+	return mP;
 }
  
 void compression(MatrixXd *aCompresser, int nbNeurones)

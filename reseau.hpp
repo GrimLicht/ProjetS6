@@ -32,7 +32,7 @@ class Reseau
 	public:
 	//Constructeurs/Destructeur
 	Reseau(Parametres p);
-	Reseau(Parametres p, std::vector<MatrixXd> mpoids, std::vector<VectorXd> vbiais);
+	Reseau(Parametres p, vector<MatrixXd> mpoids, vector<VectorXd> vbiais);
 	~Reseau();
 
 	//Setters/Getters
@@ -46,7 +46,7 @@ class Reseau
 	//Méthodes de RNU
 	//double sigmoide(double entree);
 	int max(VectorXd sorties);
-	VectorXd propagation(VectorXd entrees);
+	void propagation(VectorXd entrees);
 	int simulation(VectorXd entrees);
 	string toString(int resultatSimulation);
 	//Parametres chargerRN(string fichierTXT , vector<MatriXd> ∗mPoids, vector<VectorXd> ∗vBiais ); 
@@ -54,8 +54,8 @@ class Reseau
 	//Méthode d'apprentissage
 	double deriveeSigmoide(double sig);
 	VectorXd calculDelta1(VectorXd resultatAttendu);
-	MatrixXd calculDelta2(VectorXd delta, MatrixXd poids);
-	void miseAJour(MatrixXd delta, VectorXd activation);
+	void calculDelta2(VectorXd delta);
+	void miseAJour(); 
 	bool retropropagation(VectorXd entree, VectorXd resultatattendu);
 	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);
 	VectorXd retourLabel(int label);

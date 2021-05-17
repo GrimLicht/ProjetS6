@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#include <ctime>
 
 //Structure Parametres
 typedef struct Parametres

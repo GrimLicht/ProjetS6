@@ -97,20 +97,19 @@ void Reseau::printReseau()
 {
 	for(int i = 0; i < nbCouches; i++)
 	{
-		std::cout << "Matrice " << i << " :\n" << vCouches[i].mPoids << std::endl << std::endl;
+		cout << "Matrice " << i << " :\n" << vCouches[i].mPoids << endl << endl;
 	}
 
-	for(int i = 0; i < nbCouches; i++)
+	/*for(int i = 0; i < nbCouches; i++)
 	{
-		std::cout << "Vecteur " << i << " :\n" << vCouches[i].vBiais << std::endl << std::endl;
-	}
+		cout << "Vecteur " << i << " :\n" << vCouches[i].vBiais << endl << :endl;
+	}*/
 }
 
 int Reseau::simulation(VectorXd entrees) /*applique la propa + max */
 {
-	VectorXd v;
-	v = propagation(entrees);
-	return max(v);
+	propagation(entrees);
+	return max(vCouches[nbCouches-1].vActivation);
 }
 
 VectorXd sigmoide(VectorXd entree) //apparently slow
@@ -143,23 +142,19 @@ double Reseau::deriveeSigmoide(double sigmo)
 	return sigmo;
 }
 
-VectorXd Reseau::propagation(VectorXd entrees)
+void Reseau::propagation(VectorXd entrees)
 {
 	MatrixXd mult;
-	
+
 	vCouches[0].vActivation = sigmoide(entrees + vCouches[0].vBiais); //modify the activation vector
 
 	for (int i = 1; i < nbCouches; i++) //boucle pour TOUTES les couches cachees
 	{
 		mult = vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
+		//cout << "MULT : \n" << mult << endl;
 
-		for (int n = 0; n < vCouches[i].nbNeurones; n++)
-		{
-			vCouches[i].vActivation = sigmoide(mult + vCouches[i].vBiais); //modify the activation vector
-		}
+		vCouches[i].vActivation = sigmoide(mult + vCouches[i].vBiais); //modify the activation vector
 	}
-
-	return vCouches[nbCouches - 1].vActivation; //retourne le calcul sigmoide de la derniere couche
 }
 
 
@@ -168,85 +163,84 @@ VectorXd Reseau::calculDelta1(VectorXd resultatAttendu)
 {
 	VectorXd error = resultatAttendu - vCouches[nbCouches - 1].vActivation;
 
+
 	return error;
 }
 
-MatrixXd Reseau::calculDelta2(VectorXd delta, MatrixXd poids)
+void Reseau::calculDelta2(VectorXd delta)
 {
-	int nbNeuronesMax = vCouches[0].nbNeurones;
-	nbNeuronesMax = (vCouches[1].nbNeurones > nbNeuronesMax) ? vCouches[1].nbNeurones : (vCouches[nbCouches-1].nbNeurones > nbNeuronesMax? vCouches[nbCouches-1].nbNeurones : nbNeuronesMax);
-
-
-	MatrixXd deltaMatrice(nbCouches, nbNeuronesMax); // matrice d'erreur
-	vector<VectorXd> deltaMatrice;
-	//deltaMatrice.
-	
-	// copier le vecteur delta du calcul delta1
-	deltaMatrice.row(nbCouches-1) = delta; //on colle delta dans la derniere colonne
-
-	cout << "On a copie la colonnnnnne !\n";
-	for(int boucle = nbCouches - 2; boucle >= 0; boucle++)
+	for(int i = 0; i < vCouches[nbCouches - 1].nbNeurones; i++)
 	{
-		VectorXd mult;
-		// calcul somme
-		for (int i = 0; i < nbCouches; i++) //boucle pour TOUTES les couches cachees
-		{
-			mult += vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
-		}
+		vCouches[nbCouches-1].error[i] = delta[i] * deriveeSigmoide(vCouches[nbCouches-1].vActivation[i]);
+	}
 
-		for (int j = nbCouches - 2; j >= 0; j--)
+	for(int m = nbCouches - 2; m >= 0; m--)
+	{
+		for(int i = 0; i < vCouches[m].nbNeurones; i++) //chaque neurone de la couche actuelle
 		{
-			for (int i = 0; i < vCouches[i].nbNeurones; i++)
+			double sommeErreurs = 0;
+
+			for(int j = 0; j < vCouches[m+1].nbNeurones; j++) //chaque neurone de la couche suivante
 			{
-				deltaMatrice(j, i) = ((deriveeSigmoide(vCouches[j].vActivation[i])) * deltaMatrice(j, i - 1) * mult[i]);
+				sommeErreurs += vCouches[m+1].error[j] * vCouches[m].mPoids(j, i); //i, j ???
+			}
+			vCouches[m].error[i] = deriveeSigmoide(vCouches[m].vActivation[i]) * sommeErreurs;
+		}
+		cout << "Erreur : \n" << vCouches[m].error << endl;
+	}
+}
+
+void Reseau::miseAJour() //, VectorXd activation) 
+{
+	double gradient;
+	for (int m = 0; m < nbCouches - 1; m++)
+	{
+		for (int j = 0; j < vCouches[m+1].nbNeurones; j++)
+		{
+			for(int i = 0; i < vCouches[m].nbNeurones; i++)
+			{
+				cout << "		Neurone " << j << " Couche " << m+1 << endl;
+				cout << "			Poids original : " << vCouches[m].mPoids(j, i) << " Biais : " << vCouches[m].vBiais[i] << endl;
+
+				gradient = tauxApprentissage * vCouches[m].vActivation[i] * vCouches[m].error[i];
+
+				vCouches[m].mPoids(j, i) = vCouches[m].mPoids(j, i) + gradient;
+				vCouches[m].vBiais[i] = vCouches[m].vBiais(i) + gradient;
+
+				cout << "			Poids final : " << vCouches[m].mPoids(j, i) << " Biais final  : " << vCouches[m].vBiais[i] << endl;
 			}
 		}
 	}
-	return deltaMatrice;
-}
-
-void Reseau::miseAJour(MatrixXd delta, VectorXd activation)
-{
-
-	int indexDerniereCouche;
-	int nbNeuronesCouche;
-
-	double gradient;
-
-	for (int j = 0; j < nbCouches; j++)
-	{
-		for (int i = 0; i < vCouches[i].nbNeurones; i++)
+	/*void Couche::updateWeights()
 		{
-			gradient = tauxApprentissage * vCouches[j].vActivation[i - 1] * delta(i, j);
-			vCouches[j].mPoids(i, j) = vCouches[j].mPoids(i, j) + gradient;
-			vCouches[j].vBiais(i) = vCouches[j].vBiais(i) + gradient;
-		}
-	}
+			for(int i = 0; i < vCouches[m].nbNeurones; i++) //tout les neurones de la couche actuelle
+			{
+				for(int j = 0; j < vCouches[m-1].nbNeurones; j++) // nbNeurones couche precedente 
+				{
+					neurons[i].getWeights()[j] += ALPHA * neurons[i].getPrevWeightDelta()[j];
+					neurons[i].getPrevWeightDelta()[j] = tauxApprentissage * vCouches[m].error[i] * vCouches[m].vActivation[i]; //[i].getInput()[j];
+					vCouches[m].mPoids(i, j) += neurons[i].getPrevWeightDelta()[j]; // error between Couche[m].neurone[i] and Couche[m+1].neurone[j]
+				}
+
+				neurons[i].getWeights()[neurons[i].getNumInputs()] += ALPHA * neurons[i].getPrevWeightDelta()[neurons[i].getNumInputs()];
+				neurons[i].getPrevWeightDelta()[neurons[i].getNumInputs()] = tauxApprentissage * neurons[i].error;
+				neurons[i].getWeights()[neurons[i].getNumInputs()] += neurons[i].getPrevWeightDelta()[neurons[i].getNumInputs()];
+			}
+		}*/
 }
 
 bool Reseau::retropropagation(VectorXd entree, VectorXd resultatAttendu)
 {
 	// propagation
-	VectorXd propa;
-	propa = propagation(entree);
-	VectorXd delta = calculDelta1(resultatAttendu);
-
-	cout << "Delta 1 fonctionne :\n" << delta << endl << endl;
+	propagation(entree);
 
 	// récupération du resultatattendu
-	if (max(delta) == max(resultatAttendu))
+	if (max(vCouches[nbCouches -1].vActivation) != max(resultatAttendu))
 	{
-		cout << "Verification Delta" << endl;
-
+		VectorXd delta = calculDelta1(resultatAttendu);
 		// calculdelta2
-		MatrixXd d2;
-		for (int i = nbCouches - 1; i >= 0 ; i++)
-		{
-			d2 = calculDelta2(delta, vCouches[i].mPoids);
-			cout << "Delta 2 num " << i << " : " << d2 << endl;
-			// miseàjour
-			miseAJour(d2, vCouches[i].vActivation);
-		}
+		calculDelta2(delta);
+		miseAJour();
 
 		return false;
 	}

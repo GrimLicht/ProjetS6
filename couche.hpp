@@ -21,6 +21,7 @@ class Couche
 
 	public :
 	unsigned int nbNeurones;
+	double* error;
 	VectorXd vBiais;
 	VectorXd vActivation;
 	MatrixXd mPoids;
