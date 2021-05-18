@@ -11,7 +11,7 @@ map<int,char> mapInt;
 //Fonctions aléatoires
 VectorXd aleaBiais(int nbNeurones)
 {	
-	std::uniform_real_distribution<double> unif(0.0, 1.0);
+	std::uniform_real_distribution<double> unif(0.0, 1);
 	std::random_device rd;
 	std::default_random_engine re(rd());
 
@@ -25,16 +25,16 @@ VectorXd aleaBiais(int nbNeurones)
 	return vB;
 }
 
-MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants)
+MatrixXd aleaPoids(int nbNeuronesSuivants, int nbNeurones)
 {
-	MatrixXd mP(nbNeurones, nbNeuronesSuivants);
-	std::uniform_real_distribution<double> unif(0.0, 1.0);
+	MatrixXd mP(nbNeuronesSuivants, nbNeurones);
+	std::uniform_real_distribution<double> unif(0.0, 1);
 	std::random_device rd;
 	std::default_random_engine re(rd());
 	//return distribution(generator);
 	
-	for(int i = 0; i < nbNeurones; i++){
-		for(int j = 0; j < nbNeuronesSuivants; j++){
+	for(int i = 0; i < nbNeuronesSuivants; i++){
+		for(int j = 0; j < nbNeurones; j++){
 			
 			mP(i,j) = unif(re);
 		}

@@ -4,9 +4,6 @@
 #include "couche.hpp"
 #include "ext.hpp"
 
-#include "gestionnaireMemoire.hpp"
-#include "MainWindow.hpp"
-
 #include <iostream>
 #include <eigen3/Eigen/Dense>
 #include <map>
@@ -53,9 +50,7 @@ class Reseau
 
 	//Méthode d'apprentissage
 	double deriveeSigmoide(double sig);
-	VectorXd calculDelta1(VectorXd resultatAttendu);
-	void calculDelta2(VectorXd delta);
-	void miseAJour(); 
+	void calculDelta(VectorXd resultatAttendu);
 	bool retropropagation(VectorXd entree, VectorXd resultatattendu);
 	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);
 	VectorXd retourLabel(int label);

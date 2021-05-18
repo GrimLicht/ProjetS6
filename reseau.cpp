@@ -64,6 +64,8 @@ Reseau::~Reseau() {}
 //Getteurs
 unsigned int Reseau::getNbCouches() { return nbCouches; };
 
+vector<unsigned int> Reseau::getStats(){ return stats;}
+
 vector<MatrixXd> Reseau::getPoids()
 {
 	vector<MatrixXd> poids;
@@ -99,10 +101,10 @@ void Reseau::printReseau()
 		cout << "Matrice " << i << " :\n" << vCouches[i].mPoids << endl << endl;
 	}
 
-	/*for(int i = 0; i < nbCouches; i++)
+	for(int i = 0; i < nbCouches; i++)
 	{
-		cout << "Vecteur " << i << " :\n" << vCouches[i].vBiais << endl << :endl;
-	}*/
+		cout << "Vecteur " << i << " :\n" << vCouches[i].vBiais << endl << endl;
+	}
 }
 
 int Reseau::simulation(VectorXd entrees) /*applique la propa + max */
@@ -120,16 +122,20 @@ VectorXd sigmoide(VectorXd entree) //apparently slow
 		dividend += 1;
 		sortie[i] = 1 / dividend;
 	}
+	//cout << "Vecteur de sigmoide : \n" << sortie << endl;
 	return sortie;
 }
 
-double fast_sigmoide(double entree)
+VectorXd fast_sigmoide(VectorXd entree)
 {
-	double sortie;
-	double diviseur = abs(entree);
-	diviseur += 1;
-	sortie = 1 / diviseur;
-
+	VectorXd sortie(entree.size());
+	for(int i = 0; i < entree.size(); i++)
+	{
+		double diviseur = abs(entree[i]);
+		diviseur += 1;
+		sortie[i] = 1 / diviseur;
+	}
+	//cout << "Vecteur de sigmoide : \n" << sortie << endl;
 	return sortie;
 }
 
@@ -150,8 +156,8 @@ void Reseau::propagation(VectorXd entrees)
 	for (int i = 1; i < nbCouches; i++)
 	{
 		mult = vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
-
-		vCouches[i].vActivation = sigmoide(mult + vCouches[i].vBiais); //modify the activation vector
+		//cout << "vecteur d'input net : " << endl << mult << endl;
+		vCouches[i].vActivation = fast_sigmoide(mult + vCouches[i].vBiais); //modify the activation vector
 	}
 }
 
@@ -203,7 +209,7 @@ void Reseau::calculDelta(VectorXd resultatAttendu)
 			errorPoids = vCouches[nbCouches-1].error[o] * vCouches[nbCouches-2].vActivation[w];//pd_error_wrt_weight = tabError[o] * self.output_layer.neurons[o].calculate_pd_total_net_input_wrt_weight(w_ho)
 //			cout << "Apres le calcul de l'erreur par poids ca bloque pas ! ";
 			// Δw = α * ∂Eⱼ/∂wᵢ
-			cout << "Ajout : " << tauxApprentissage*errorPoids << endl;
+			//cout << "Ajout : " << tauxApprentissage*errorPoids << endl;
 			if((vCouches[nbCouches-2].mPoids(o, w) - tauxApprentissage * errorPoids) <= 1)
 				vCouches[nbCouches-2].mPoids(o, w) -= tauxApprentissage * errorPoids; //self.output_layer.neurons[o].weights[w_ho] -= self.LEARNING_RATE * pd_error_wrt_weight
 		}
@@ -227,15 +233,15 @@ void Reseau::calculDelta(VectorXd resultatAttendu)
 			}
 		}
 	}
-	cout << "On a fini de modif tout les poids" << endl;
+	//cout << "On a fini de modif tout les poids" << endl;
 }
 
 bool Reseau::retropropagation(VectorXd entree, VectorXd resultatAttendu)
 {
 	// propagation
 	propagation(entree);
-	cout << "Matrice attendue : \n" << resultatAttendu << endl;
-	cout << "Matrice de sortie : \n" << vCouches[nbCouches-1].vActivation << endl;
+	//cout << "Matrice attendue : \n" << resultatAttendu << endl;
+	//cout << "Matrice de sortie : \n" << vCouches[nbCouches-1].vActivation << endl;
 	// récupération du resultatattendu
 	if (max(vCouches[nbCouches -1].vActivation) != max(resultatAttendu))
 	{
@@ -246,7 +252,6 @@ bool Reseau::retropropagation(VectorXd entree, VectorXd resultatAttendu)
 	}
 	else
 	{
-		cout << "On est pas passe par Mise a Jour\n";
 		return true;
 	}
 }

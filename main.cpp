@@ -12,18 +12,25 @@ int main(int argc, char **argv)
 {
 	Parametres param;
 	param.typeSim = 1;
-	param.nbCouches = 30;
-	param.nbNeuronesEntree = 20;
-	param.nbNeuronesCache = 50;
-	param.nbNeuronesSortie = 10;
-	param.tauxApprentissage = 1;
+	param.nbCouches = 6;
+	param.nbNeuronesEntree = 3;
+	param.nbNeuronesCache = 10;
+	param.nbNeuronesSortie = 3;
+	param.tauxApprentissage = 0.5;
 
 	Reseau res(param);
 
-	VectorXd entree; entree = aleaBiais(20);
+	VectorXd entree; entree = aleaBiais(3);
 	cout << "Vecteur test : " << entree << endl;
 
-	VectorXd Attendu(10); Attendu << 0, 1, 0, 0, 0, 0, 0, 0, 0, 0;
+	VectorXd Attendu(3); Attendu << 0, 1, 0;
+	//res.printReseau();
+	res.stats.push_back(12);
+	res.stats.push_back(7);
+	res.stats.push_back(14);
+	res.stats.push_back(8);
+	res.stats.push_back(6);
+	res.stats.push_back(3);
 
 	bool verif = false;
 	while(!verif)
@@ -36,9 +43,14 @@ int main(int argc, char **argv)
 		cout << "La propa est " << ((verif == true) ? "vrai" : "faux") << endl;*/
 		//res.printReseau();
 	}
+	cout << "Retropropa finie\n";
+	sauvegardeRN(res, "reseau.txt");
+	res.printReseau();
+	sauvegardeStat(res, "stat.txt");
+	//sauvegardeStat(res, "stat.txt");
 
 	int Reponse = res.simulation(entree);
-
+	std::cout << "Valeur de sortie : \n" <<  res.vCouches[res.nbCouches-1].vActivation << std::endl;
 	std::cout << "Le neurone de reponse est le : " << Reponse << std::endl;
 
 	return 0;

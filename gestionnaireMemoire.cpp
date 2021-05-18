@@ -78,11 +78,12 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 		}
 
 		//Lecture de la valeur du pixel dans le fichier
-		for(int i=0; i<numberOfImages; ++i){
-
-			for(int r=0; r<numberOfRows; ++r){
-				for(int c=0; c<numberOfColumns; ++c){
-
+		for(int i=0; i<numberOfImages; ++i)
+		{
+			for(int r=0; r<numberOfRows; ++r)
+			{
+				for(int c=0; c<numberOfColumns; ++c)
+				{
 					//Lecture du pixel
 					unsigned char temp = 0;
 					monFichier.read((char*)&temp, sizeof(temp));
@@ -302,8 +303,6 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 	}
 }
 
-
-
 /* Permet de transférer les informations utiles de la structure BMPImageHeader à la structure Image */
 Image convertBitmapToImage(BitMapImageHeader b)
 {	
@@ -325,45 +324,6 @@ Image convertBitmapToImage(BitMapImageHeader b)
 	}
 	return image;
 }
-
-
-
-
-/*Permet de sauvegarder les statistiques de reussite du RN*/
-/*void sauvegardeStat(Reseau r, string chemin)
-{
-	ofstream txt(chemin.c_str(), ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
-
-	if (txt)
-	{
-		vector<unsigned int> vecStats = r.getStats();
-		ostringstream streamStats;
-
-		if (!vecStats.empty())
-		{
-			copy(vecStats.begin(), vecStats.end()-1, //on recupere tous les elements sauf le dernier, pour eviter les char accidentels a la fin
-					ostream_iterator<unsigned int>(streamStats, "\n"));
-			
-
-				txt << vecStats.back(); //on ajoute le dernier element, sans char a la fin
-		}
-		//txt << streamStats;
-		txt << endl;
-	}
-	else
-		cout << "Erreur lors de l'ouverture du fichier\n";
-
-	txt.close();
-}*/
-
-
-
-
-
-
-
-
-
 
 VectorXd allPixelMNIST(Mnist m) {
 	VectorXd pixels(784);
@@ -420,11 +380,11 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 			choix = rand()%2;
 			if (choix == 0)		// le choix ça sera le label du coup
 			{
-			 dirname += "chat";
+				dirname += "chat";
 			}
 			else
 			{
-			 dirname += "chien";
+				dirname += "chien";
 			}
 			// dirname = to_string(choix);
 			// ouvrir le directory ou concatener avec string f => doss_entr/chien_ou_chat
@@ -457,4 +417,72 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 
 	}*/
 	else exit(1);
+}
+
+/*Permet de sauvegarder les statistiques de reussite du RN*/
+void sauvegardeStat(Reseau r, string chemin)
+{
+	ofstream txt(chemin, ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
+
+	if (txt)
+	{
+		vector<unsigned int> vecStats = r.getStats();
+		for (int i = 0; i < vecStats.size(); i++)
+		{
+			txt << vecStats[i] << endl;
+		}
+		txt.close();
+	}
+	else cout << "Erreur lors de l'ouverture du fichier\n";
+}
+
+void sauvegardeRN(Reseau r, string chemin)
+{ //Adapter avec des getteurs
+
+	ofstream fichier(chemin, ios::out | ios::trunc); //permet de supp le contenu du fichier avant l'écriture
+	if (fichier) // Si le fichier est ouvert
+	{
+		//Structure paramètres sur la 1ère ligne
+		fichier << r.typeSim << " " << r.getNbCouches() << " " << r.vCouches[0].getNbNeurones() << " ";
+
+		if (r.getNbCouches() > 2) //Si on a + de 2 couches, on met le nombre de neurones pour la couche cachée
+			fichier << r.vCouches[1].getNbNeurones() << " ";
+		else //Sinon, on met 0
+			fichier << "0 ";
+
+		fichier << r.vCouches[r.getNbCouches() - 1].getNbNeurones() << " " << r.tauxApprentissage << "\n";
+
+		//Mettre tous les mPoids
+
+		for(int i = 0; i < r.getNbCouches()-1; i++)
+		{ //Pour toutes les couches sauf la dernière
+			for(int n = 0; n < r.vCouches[i].getNbNeurones(); n++)
+			{ //n est le neurone de la couche actuelle
+				for(int m = 0; m < r.vCouches[i+1].getNbNeurones(); m++)
+				{ //m est le neurone de la couche suivante
+					fichier << r.vCouches[i].mPoids(m,n) << " "; //on récupère le poids entre n et m
+				}
+				//Potentiellement mettre un char spécial pour signifier qu'on passe à une nouvelle ligne ?
+			}
+			//On passe à la matrice de la couche d'après
+			fichier << "\n";
+		}
+
+		//Mettre tous les vBiais
+
+		for (int i = 0; i < r.getNbCouches(); i++)
+		{ //pour chaque couche i qui sont sur chaque ligne i+1
+			for (int j = 0; j < r.vCouches[i].getNbNeurones(); j++)
+			{ //pour chaque neurone j, copie des biais
+				fichier << r.vCouches[i].vBiais(j) << " ";
+			}
+		}
+
+		//On a fini d'écrire dans le fichier
+		fichier.close();
+	}
+	else // Si le fichier ne s'est pas ouvert
+	{
+		cout << "Erreur lors de l'enregistrement" << endl;
+	}
 }

@@ -26,7 +26,6 @@ typedef struct Parametres
 void compression(Eigen::MatrixXd* aCompresser, int nbNeurones);
 
 Eigen::VectorXd aleaBiais(int nbNeurones);
-
 Eigen::MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants);
 
 #endif

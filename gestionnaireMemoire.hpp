@@ -3,7 +3,6 @@
 
 #include "reseau.hpp"
 #include "couche.hpp"
-#include "MainWindow.hpp"
 
 #include "stdio.h"
 #include "stdlib.h"
@@ -43,8 +42,6 @@ struct BitMapImageHeader
 };
 typedef struct BitMapImageHeader BitmapImageHeader;
 
-
-
 //Structure Image
 struct Image
 {
@@ -56,8 +53,6 @@ struct Image
 };
 typedef struct Image Image;
 
-
-
 //Structure Mnist
 struct Mnist {
 	unsigned long Width ;
@@ -66,8 +61,6 @@ struct Mnist {
 	int etiquette ;
 };
 typedef struct Mnist MNIST;
-
-
 
 //Méthodes du gestionnaire de mémoire
 int reverseInt(int i);
@@ -78,10 +71,10 @@ Image compression(unsigned int nbNeurones);
 Image remplissage (unsigned int nbNeurones);
 //VectorXd allPixelBitMap(Image i);
 VectorXd allPixelMNIST(Mnist m); 
-//string recupCheminAcces(QString chemin);
-//void sauvegardeRN(Reseau r);
-//void sauvegardeStat(Reseau r, string chemin);
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones);
+//string recupCheminAcces(QString chemin);
+void sauvegardeRN(Reseau r, string chemin);
+void sauvegardeStat(Reseau r, string chemin);
 
 
 #endif /* GestionnaireMemoire_hpp */
