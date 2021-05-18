@@ -43,7 +43,6 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 	vCouches.reserve(nbCouches);
 
 	//Couche d'entrée
-
 	vCouches.emplace_back(Couche(p.nbNeuronesEntree, mPoids[0], vBiais[0]));
 
 	//Couches cachées-1
@@ -80,7 +79,7 @@ vector<MatrixXd> Reseau::getPoids()
 //Méthodes du RNU
 int Reseau::max(VectorXd sorties) //permet d'avoir l'indice de la valeur max
 {
-	int max = 0;
+	double max = 0;
 	int indice = -1;
 	for (int i = 0; i < (sorties.size()); i++)
 	{
@@ -139,7 +138,7 @@ double Reseau::deriveeSigmoide(double sigmo)
 	double sortie;
 	sortie = 1 - sigmo;
 	sortie *= sigmo;
-	return sigmo;
+	return sortie;
 }
 
 void Reseau::propagation(VectorXd entrees)
@@ -148,100 +147,101 @@ void Reseau::propagation(VectorXd entrees)
 
 	vCouches[0].vActivation = sigmoide(entrees + vCouches[0].vBiais); //modify the activation vector
 
-	for (int i = 1; i < nbCouches; i++) //boucle pour TOUTES les couches cachees
+	for (int i = 1; i < nbCouches; i++)
 	{
 		mult = vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
-		//cout << "MULT : \n" << mult << endl;
 
 		vCouches[i].vActivation = sigmoide(mult + vCouches[i].vBiais); //modify the activation vector
 	}
 }
 
-
-// calcul delta1
-VectorXd Reseau::calculDelta1(VectorXd resultatAttendu)
+void Reseau::calculDelta(VectorXd resultatAttendu)
 {
-	VectorXd error = resultatAttendu - vCouches[nbCouches - 1].vActivation;
-
-
-	return error;
-}
-
-void Reseau::calculDelta2(VectorXd delta)
-{
-	for(int i = 0; i < vCouches[nbCouches - 1].nbNeurones; i++)
+// 1. Output neuron deltas
+	//cout << "on commence les calculs" << endl;
+	//double *tabError = new double[vCouches[nbCouches-1].nbNeurones]; //tabError = [0] * len(self.output_layer.neurons)
+	for(int o = 0; o < vCouches[nbCouches-1].nbNeurones; o++)//for o in range(len(self.output_layer.neurons)):
 	{
-		vCouches[nbCouches-1].error[i] = delta[i] * deriveeSigmoide(vCouches[nbCouches-1].vActivation[i]);
+		//∂E/∂zⱼ
+		vCouches[nbCouches-1].error[o] = (vCouches[nbCouches-1].vActivation[o] - resultatAttendu[o]) * deriveeSigmoide(vCouches[nbCouches-1].vActivation[o]);
+		 //tabError[o]
+		 //= self.output_layer.neurons[o].calculate_pd_error_wrt_total_net_input(training_outputs[o]) = self.calculate_pd_error_wrt_output(target_output) * self.calculate_pd_total_net_input_wrt_input();
+		 //= -(target_output - self.output) * self.output * (1 - self.output)
 	}
+	//tabError = vCouches[nbCouches-1].error;
+	//cout << "on a calcule pour la couche de sortie" << endl;
 
-	for(int m = nbCouches - 2; m >= 0; m--)
+	//2. Hidden neuron deltas
+	double errorPoids;
+	for(int couche = nbCouches-2; couche >= 0; couche--)
 	{
-		for(int i = 0; i < vCouches[m].nbNeurones; i++) //chaque neurone de la couche actuelle
+		for(int h = 0; h < vCouches[couche].nbNeurones; h++) //for h in range(len(self.hidden_layer.neurons)):
 		{
-			double sommeErreurs = 0;
-
-			for(int j = 0; j < vCouches[m+1].nbNeurones; j++) //chaque neurone de la couche suivante
+			// We need to calculate the derivative of the error with respect to the output of each hidden layer neuron
+			// dE/dyⱼ = Σ ∂E/∂zⱼ * ∂z/∂yⱼ = Σ ∂E/∂zⱼ * wᵢⱼ
+			double errorHidden = 0; //errorHidden = 0
+			for(int o = 0; o < vCouches[couche+1].nbNeurones; o++) //for o in range(len(self.output_layer.neurons)):
 			{
-				sommeErreurs += vCouches[m+1].error[j] * vCouches[m].mPoids(j, i); //i, j ???
+				errorHidden += vCouches[nbCouches-1].error[o] * vCouches[couche].mPoids(o, h); //errorHidden += tabError[o] * self.output_layer.neurons[o].weights[h]
 			}
-			vCouches[m].error[i] = deriveeSigmoide(vCouches[m].vActivation[i]) * sommeErreurs;
-		}
-		cout << "Erreur : \n" << vCouches[m].error << endl;
-	}
-}
 
-void Reseau::miseAJour() //, VectorXd activation) 
-{
-	double gradient;
-	for (int m = 0; m < nbCouches - 1; m++)
-	{
-		for (int j = 0; j < vCouches[m+1].nbNeurones; j++)
-		{
-			for(int i = 0; i < vCouches[m].nbNeurones; i++)
-			{
-				cout << "		Neurone " << j << " Couche " << m+1 << endl;
-				cout << "			Poids original : " << vCouches[m].mPoids(j, i) << " Biais : " << vCouches[m].vBiais[i] << endl;
-
-				gradient = tauxApprentissage * vCouches[m].vActivation[i] * vCouches[m].error[i];
-
-				vCouches[m].mPoids(j, i) = vCouches[m].mPoids(j, i) + gradient;
-				vCouches[m].vBiais[i] = vCouches[m].vBiais(i) + gradient;
-
-				cout << "			Poids final : " << vCouches[m].mPoids(j, i) << " Biais final  : " << vCouches[m].vBiais[i] << endl;
-			}
+			// ∂E/∂zⱼ = dE/dyⱼ * ∂zⱼ/∂
+			vCouches[couche].error[h] = errorHidden * deriveeSigmoide(vCouches[couche].vActivation[h]);//tabErrorHidden[h] = errorHidden * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_input()
 		}
 	}
-	/*void Couche::updateWeights()
-		{
-			for(int i = 0; i < vCouches[m].nbNeurones; i++) //tout les neurones de la couche actuelle
-			{
-				for(int j = 0; j < vCouches[m-1].nbNeurones; j++) // nbNeurones couche precedente 
-				{
-					neurons[i].getWeights()[j] += ALPHA * neurons[i].getPrevWeightDelta()[j];
-					neurons[i].getPrevWeightDelta()[j] = tauxApprentissage * vCouches[m].error[i] * vCouches[m].vActivation[i]; //[i].getInput()[j];
-					vCouches[m].mPoids(i, j) += neurons[i].getPrevWeightDelta()[j]; // error between Couche[m].neurone[i] and Couche[m+1].neurone[j]
-				}
 
-				neurons[i].getWeights()[neurons[i].getNumInputs()] += ALPHA * neurons[i].getPrevWeightDelta()[neurons[i].getNumInputs()];
-				neurons[i].getPrevWeightDelta()[neurons[i].getNumInputs()] = tauxApprentissage * neurons[i].error;
-				neurons[i].getWeights()[neurons[i].getNumInputs()] += neurons[i].getPrevWeightDelta()[neurons[i].getNumInputs()];
+	//cout << "On a fini de calculer les deltas" << endl; /////////// correct
+
+	// 3. Update output neuron weights
+	for(int o = 0; o < vCouches[nbCouches-1].nbNeurones; o++) //for o in range(len(self.output_layer.neurons)):
+	{
+		//cout << "Neurone " << o << " de la couche de sortie" << endl;
+		for(int w = 0; w < vCouches[nbCouches-2].nbNeurones; w++)//for w_ho in range(len(self.output_layer.neurons[o].weights)):
+		{
+			//cout << "	Neurone : " << w << " de la couche precedente " << endl;
+			// ∂Eⱼ/∂wᵢⱼ = ∂E/∂zⱼ * ∂zⱼ/∂wᵢⱼ
+			errorPoids = vCouches[nbCouches-1].error[o] * vCouches[nbCouches-2].vActivation[w];//pd_error_wrt_weight = tabError[o] * self.output_layer.neurons[o].calculate_pd_total_net_input_wrt_weight(w_ho)
+//			cout << "Apres le calcul de l'erreur par poids ca bloque pas ! ";
+			// Δw = α * ∂Eⱼ/∂wᵢ
+			cout << "Ajout : " << tauxApprentissage*errorPoids << endl;
+			if((vCouches[nbCouches-2].mPoids(o, w) - tauxApprentissage * errorPoids) <= 1)
+				vCouches[nbCouches-2].mPoids(o, w) -= tauxApprentissage * errorPoids; //self.output_layer.neurons[o].weights[w_ho] -= self.LEARNING_RATE * pd_error_wrt_weight
+		}
+	}
+
+	//cout << "On a fini de modif les poids de la couche de sortie" << endl;
+
+	// 4. Update hidden neuron weights
+	for(int couche = 0; couche < nbCouches-1; couche++)
+	{
+		for(int h = 0; h < vCouches[couche+1].nbNeurones; h++)//for h in range(len(self.hidden_layer.neurons)):
+		{
+			for(int w = 0; w < vCouches[couche].nbNeurones; w++) //for w_ih in range(len(self.hidden_layer.neurons[h].weights)):
+			{
+				// ∂Eⱼ/∂wᵢ = ∂E/∂zⱼ * ∂zⱼ/∂wᵢ
+				errorPoids = vCouches[couche+1].error[h] * vCouches[couche].vActivation[w]; //pd_error_wrt_weight = tabErrorHidden[h] * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_weight(w_ih)
+
+				// Δw = α * ∂Eⱼ/∂wᵢ
+				if((vCouches[couche].mPoids(h, w) - tauxApprentissage * errorPoids) <= 1)
+					vCouches[couche].mPoids(h, w) -= tauxApprentissage * errorPoids; //self.hidden_layer.neurons[h].weights[w_ih] -= self.LEARNING_RATE * pd_error_wrt_weight
 			}
-		}*/
+		}
+	}
+	cout << "On a fini de modif tout les poids" << endl;
 }
 
 bool Reseau::retropropagation(VectorXd entree, VectorXd resultatAttendu)
 {
 	// propagation
 	propagation(entree);
-
+	cout << "Matrice attendue : \n" << resultatAttendu << endl;
+	cout << "Matrice de sortie : \n" << vCouches[nbCouches-1].vActivation << endl;
 	// récupération du resultatattendu
 	if (max(vCouches[nbCouches -1].vActivation) != max(resultatAttendu))
 	{
-		VectorXd delta = calculDelta1(resultatAttendu);
 		// calculdelta2
-		calculDelta2(delta);
-		miseAJour();
-
+		calculDelta(resultatAttendu);
+		//cout << vCouches[nbCouches-2].mPoids << endl;
 		return false;
 	}
 	else

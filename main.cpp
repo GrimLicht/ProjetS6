@@ -12,36 +12,30 @@ int main(int argc, char **argv)
 {
 	Parametres param;
 	param.typeSim = 1;
-	param.nbCouches = 3;
-	param.nbNeuronesEntree = 1;
-	param.nbNeuronesCache = 2;
-	param.nbNeuronesSortie = 2;
-	param.tauxApprentissage = 0.50;
+	param.nbCouches = 30;
+	param.nbNeuronesEntree = 20;
+	param.nbNeuronesCache = 50;
+	param.nbNeuronesSortie = 10;
+	param.tauxApprentissage = 1;
 
 	Reseau res(param);
-	Reseau res2(param);
 
-
-	std::cout << "wagon" << std::endl;
-
-	res.printReseau();
-	res2.printReseau();
-	VectorXd entree; entree = aleaBiais(1);
+	VectorXd entree; entree = aleaBiais(20);
 	cout << "Vecteur test : " << entree << endl;
 
-	VectorXd Attendu(2); Attendu << 1,0;
+	VectorXd Attendu(10); Attendu << 0, 1, 0, 0, 0, 0, 0, 0, 0, 0;
 
 	bool verif = false;
-	//while(!verif)
-	//{
+	while(!verif)
+	{
 		verif = res.retropropagation(entree, Attendu);
 		/*cout << "Vecteur test : \n" << entree << endl;
 		cout << "Vecteur de sortie : \n" << res.vCouches[res.nbCouches-1].vActivation << endl;
 		cout << "La plus grande valeur dans sortie est : " << res.max(res.vCouches[res.nbCouches-1].vActivation) << endl;
 		cout << "La plus grande valeur dans attendue est : " << res.max(Attendu) << endl;
 		cout << "La propa est " << ((verif == true) ? "vrai" : "faux") << endl;*/
-		res.printReseau();
-	//}
+		//res.printReseau();
+	}
 
 	int Reponse = res.simulation(entree);
 
