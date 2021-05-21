@@ -454,6 +454,11 @@ VectorXd allPixelMNIST(Mnist m)
 		for(int j = 0; j < 28; j++)
 		{
 			pixels[i] = m.pixels[i][j] / 255.0;
+			if (isnan(pixels[i]))
+			{
+				cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
+				pixels[i] = 0;
+			}
 		}
 	}
 

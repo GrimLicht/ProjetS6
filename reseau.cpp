@@ -128,13 +128,22 @@ VectorXd sigmoide(VectorXd entree) //apparently slow
 
 VectorXd fast_sigmoide(VectorXd entree)
 {
-	cout << "Prout" << endl;
+	//cout << "Prout" << endl;
 	VectorXd sortie(entree.size());
 	for(int i = 0; i < entree.size(); i++)
 	{
+		//cout << entree[i] << " -> ";
 		double diviseur = abs(entree[i]);
+		//cout << abs(entree[i]) << " -> ";
 		diviseur += 1;
+		//cout << diviseur << " = ";
 		sortie[i] = 1 / diviseur;
+		if (isnan(sortie[i]))
+		{
+			//cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
+			sortie[i] = 0;
+		}
+		cout << sortie[i] << endl;
 	}
 	//cout << "Vecteur de sigmoide : \n" << sortie << endl;
 	return sortie;
@@ -151,25 +160,26 @@ double Reseau::deriveeSigmoide(double sigmo)
 MatrixXd Reseau::multiply(MatrixXd m, VectorXd v)
 {
 	VectorXd solution(m.col(0).size());
-	cout << "SIZE OF THE VECTOR : " << v.size() << endl;
+	//cout << "SIZE OF THE VECTOR : " << v.size() << endl;
 	//int solution[3];
 	//initilization.
 	solution.Zero(m.col(0).size());
-
+	//cout << "Vector : " << endl << v << endl;
 	//multiplication.
 	//cout << "Column size or number of lines (i): " << m.col(0).size() << endl;
 	//cout << "Row size or number of cases per line (j): " << m.row(0).size() << endl;
-	cout << "LES COLONNES SONT EGALES A : " << m.col(0).size() << endl;
-	cout << "LES LIGNE SONT EGALES A : " << m.row(0).size() << endl;
+	//cout << "LES COLONNES SONT EGALES A : " << m.col(0).size() << endl;
+	//cout << "LES LIGNE SONT EGALES A : " << m.row(0).size() << endl;
 	for(int i = 0; i < m.col(0).size(); i++)
 	{
-		cout << "SELON LES COLONNES : " << i << endl;
+	//	cout << "SELON LES COLONNES : " << i << endl;
 		for(int j = 0; j < m.row(0).size(); j++)
 		{
-			cout << "	POUR LES LIGNES : " << j << endl;
+	//		cout << "	V de " << j << " : " << v[j] << endl;
 			solution[i] += m(i,j) * v[j];
 		}
 	}
+
 	return solution;
 }
 
@@ -180,10 +190,10 @@ void Reseau::propagation(VectorXd entrees)
 	vCouches[0].vActivation = fast_sigmoide(entrees + vCouches[0].vBiais); //modify the activation vector
 	for (int i = 1; i < nbCouches; i++)
 	{
-		cout << "Couche actuelle " << i << endl << "Nb Couches : " << nbCouches << endl;
+		//cout << "Couche actuelle " << i << endl << "Nb Couches : " << nbCouches << endl;
 		mult.Zero(vCouches[i].nbNeurones);
 		mult = multiply(vCouches[i - 1].mPoids, vCouches[i - 1].vActivation); //mult = vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
-		cout << "Mult : \n" << mult << endl;
+		//cout << "Mult : \n" << mult << endl;
 
 		/*double temp;
 		for(int j = 0; j < mult.size(); j++)

@@ -45,19 +45,20 @@ int main(int argc, char **argv)
 	MNIST img;
 	img = recupDonneesFileMNIST("emnist-letters-train-images-idx3-ubyte", "emnist-letters-train-labels-idx1-ubyte");
 	VectorXd MNISTAttendu = etiquetteMNIST(img, param.typeSim);
+	cout << "Vecteur Attendu : " << MNISTAttendu << endl;
 
 	VectorXd entree = allPixelMNIST(img);
 	bool verif = false;
-	/*while(!verif)
-	{
+	//while(!verif)
+	//{
 		verif = res.retropropagation(entree, MNISTAttendu);
-		cout << "Matrice de poids vers la derniere couche :\n" << res.vCouches[res.nbCouches-2].mPoids << endl << "Vecteur de sortie :\n" << res.vCouches[res.nbCouches-1].vActivation << endl;
-	}*/
+		//cout << "Matrice de poids vers la derniere couche :\n" << res.vCouches[res.nbCouches-2].mPoids << endl << "Vecteur de sortie :\n" << res.vCouches[res.nbCouches-1].vActivation << endl;
+	//}
 
 	int Reponse = res.simulation(entree);
-	std::cout << "Valeur de sortie : \n" <<  res.vCouches[1].vActivation << std::endl;
+	std::cout << "Valeur de sortie : \n" <<  res.vCouches[res.nbCouches-1].vActivation << std::endl;
 	std::cout << "Le neurone de reponse est le : " << Reponse << std::endl;
-	char c = Reponse - 97;
+	char c = Reponse + 97;
 	std::cout << "La lettre de reponse est le : " << c << std::endl;
 	return 0;
 
