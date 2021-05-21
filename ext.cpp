@@ -1,5 +1,5 @@
 #include "ext.hpp"
-
+#include "gestionnaireMemoire.hpp"
 using namespace std;
 using namespace Eigen;
 
@@ -42,22 +42,26 @@ MatrixXd aleaPoids(int nbNeuronesSuivants, int nbNeurones)
 	return mP;
 }
  
-void compression(MatrixXd *aCompresser, int nbNeurones)
+Image compression(Image i, int nbNeurones)
 {
-	int row = aCompresser->rows();
-	int col = aCompresser->cols(); 
+	Image img;
+	img.Width = i.Width;
+	img.Height = i.Height;
+	img.etiquette = i.etiquette;
 
-	while(row*col > nbNeurones)
+	double * temp;
+
+	while(img.Width*img.Height > nbNeurones)
 	{
-		row--; col--;
-		MatrixXd compressee = MatrixXd::Zero(row, col);
-		for(int i = 0; i < row; i++)
+		img.Width--; img.Height--;
+		for(int m = 0; m < img.Height; m++)
 		{
-			for(int j = 0; j < col; j++) 
-				compressee(i,j) = ((*aCompresser)(i,j) + (*aCompresser)(i+1,j) + (*aCompresser)(i,j+1) + (*aCompresser)(i+1,j+1))/4; 
+			for(int n = 0; n < img.Width; n++) 
+				temp[m*img.Width + n] = (i.pixel[m*img.Width + n] + i.pixel[(m+1)*img.Width] + i.pixel[m*img.Width + n+1] + i.pixel[(m+1)*img.Width + n+1])/4; 
 		}
-		*aCompresser = compressee;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
+		i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
 	}
+	return i;
 }
 
 /*void remplissage(MatrixXd *aRemplir)

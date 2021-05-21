@@ -39,6 +39,7 @@ class Reseau
 
 	//Methode de tests
 	void printReseau();
+	MatrixXd multiply(MatrixXd m, VectorXd v);
 	
 	//Méthodes de RNU
 	//double sigmoide(double entree);

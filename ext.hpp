@@ -13,7 +13,7 @@
 #include <ctime>
 
 //Structure Parametres
-typedef struct Parametres
+struct Parametres
 {
 	unsigned int typeSim;
 	unsigned int nbCouches;
@@ -21,9 +21,11 @@ typedef struct Parametres
 	unsigned int nbNeuronesCache;
 	unsigned int nbNeuronesSortie;
 	double tauxApprentissage;
-}Parametres;
+};
 
-void compression(Eigen::MatrixXd* aCompresser, int nbNeurones);
+struct Image;
+
+Image compression(Image i, int nbNeurones);
 
 Eigen::VectorXd aleaBiais(int nbNeurones);
 Eigen::MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants);

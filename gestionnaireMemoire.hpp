@@ -49,7 +49,6 @@ struct Image
 	unsigned  long Height ;
 	double* pixel;
 	int etiquette;
-	
 };
 typedef struct Image Image;
 
@@ -70,11 +69,11 @@ Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(unsigned int nbNeurones);
 Image remplissage (unsigned int nbNeurones);
 //VectorXd allPixelBitMap(Image i);
-VectorXd allPixelMNIST(Mnist m); 
+VectorXd etiquetteMNIST(Mnist m, int typeSimu);
+VectorXd allPixelMNIST(Mnist m);
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones);
 //string recupCheminAcces(QString chemin);
 void sauvegardeRN(Reseau r, string chemin);
 void sauvegardeStat(Reseau r, string chemin);
-
 
 #endif /* GestionnaireMemoire_hpp */

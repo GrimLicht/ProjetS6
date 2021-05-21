@@ -128,6 +128,7 @@ VectorXd sigmoide(VectorXd entree) //apparently slow
 
 VectorXd fast_sigmoide(VectorXd entree)
 {
+	cout << "Prout" << endl;
 	VectorXd sortie(entree.size());
 	for(int i = 0; i < entree.size(); i++)
 	{
@@ -147,15 +148,51 @@ double Reseau::deriveeSigmoide(double sigmo)
 	return sortie;
 }
 
+MatrixXd Reseau::multiply(MatrixXd m, VectorXd v)
+{
+	VectorXd solution(m.col(0).size());
+	cout << "SIZE OF THE VECTOR : " << v.size() << endl;
+	//int solution[3];
+	//initilization.
+	solution.Zero(m.col(0).size());
+
+	//multiplication.
+	//cout << "Column size or number of lines (i): " << m.col(0).size() << endl;
+	//cout << "Row size or number of cases per line (j): " << m.row(0).size() << endl;
+	cout << "LES COLONNES SONT EGALES A : " << m.col(0).size() << endl;
+	cout << "LES LIGNE SONT EGALES A : " << m.row(0).size() << endl;
+	for(int i = 0; i < m.col(0).size(); i++)
+	{
+		cout << "SELON LES COLONNES : " << i << endl;
+		for(int j = 0; j < m.row(0).size(); j++)
+		{
+			cout << "	POUR LES LIGNES : " << j << endl;
+			solution[i] += m(i,j) * v[j];
+		}
+	}
+	return solution;
+}
+
 void Reseau::propagation(VectorXd entrees)
 {
-	MatrixXd mult;
+	VectorXd mult;
 
-	vCouches[0].vActivation = sigmoide(entrees + vCouches[0].vBiais); //modify the activation vector
-
+	vCouches[0].vActivation = fast_sigmoide(entrees + vCouches[0].vBiais); //modify the activation vector
 	for (int i = 1; i < nbCouches; i++)
 	{
-		mult = vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
+		cout << "Couche actuelle " << i << endl << "Nb Couches : " << nbCouches << endl;
+		mult.Zero(vCouches[i].nbNeurones);
+		mult = multiply(vCouches[i - 1].mPoids, vCouches[i - 1].vActivation); //mult = vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
+		cout << "Mult : \n" << mult << endl;
+
+		/*double temp;
+		for(int j = 0; j < mult.size(); j++)
+		{
+			cout << "Value before division : " << mult[j] << endl;
+			temp = mult[j]/vCouches[i-1].nbNeurones;
+			mult[j] = temp;
+			cout << "Value after division : " << mult[j] << endl;
+		}*/
 		//cout << "vecteur d'input net : " << endl << mult << endl;
 		vCouches[i].vActivation = fast_sigmoide(mult + vCouches[i].vBiais); //modify the activation vector
 	}
