@@ -299,19 +299,19 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 	{
 		//image->etiquette=f;
 		//HEADER
-		cout << "///////////////////HEADER///////////////////" << endl;
+		//cout << "///////////////////HEADER///////////////////" << endl;
 		
 		// lecture du type => B M dans notre cas 
 		char* type = new char[2];
 		is.read(type, 2);
 		header->type=type;
-		cout << "Signature: "<< header->type << endl;
+		//cout << "Signature: "<< header->type << endl;
 
 		// lecture de la taille du file header	
 		int size;
 		is.read(reinterpret_cast<char*>(&size), 4);
 		header->size=size;
-		cout << "File size: " << header->size << endl;
+		//cout << "File size: " << header->size << endl;
 
 		// lecture de la partie reserved 
 		char* tmp = new char[4];
@@ -322,70 +322,70 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		int offset;
 		is.read(reinterpret_cast<char*>(&offset), 4);
 		header->offset=offset;
-		cout << "DataOffset: " << header->offset << endl;
+		//cout << "DataOffset: " << header->offset << endl;
 		
 		//INFOHEADER
-		cout << "///////////////////INFOHEADER///////////////////" << endl;
+		//cout << "///////////////////INFOHEADER///////////////////" << endl;
 
 		// lire la taille du infoheader 
 		int tailleHeaderImage; 
 		is.read(reinterpret_cast<char*>(&tailleHeaderImage),4) ; 
 		image->Size=tailleHeaderImage;
-		cout << "Size: " << image->Size << endl ; 
+		//cout << "Size: " << image->Size << endl ; 
 
 		// lire la largeur 
 		int width; 
 		is.read(reinterpret_cast<char*>(&width),4); 
 		image->Width=width;
-		cout << "Width: "	<< image->Width << endl ; 
+		//cout << "Width: "	<< image->Width << endl ; 
 
 		// lecture de la hauteur 
 		int height; 
 		is.read(reinterpret_cast<char*>(&height),4) ; 
 		image->Height=height;
-		cout << "Height: " << image->Height << endl ; 
+		//cout << "Height: " << image->Height << endl ; 
 
 		// lecture des color planes du infoHeader
 		int numberOfColorPlanes ; 
 		is.read(reinterpret_cast<char*>(&numberOfColorPlanes),2) ; 
 		image->Planes=numberOfColorPlanes;
-		cout << "Number of Color Planes: " << image->Planes << endl ; 
+		//cout << "Number of Color Planes: " << image->Planes << endl ; 
 
 		// lecture des bits par pixel du infoHeader
 		char numberOfBitPerPixel ; 
 		is.read(reinterpret_cast<char*>(&numberOfBitPerPixel),2 ) ; 
 		image->bitCount=numberOfBitPerPixel;
-		cout << "Number of bit per pixel: " << (int)image->bitCount << endl ; 
+		//cout << "Number of bit per pixel: " << (int)image->bitCount << endl ; 
 
 		// lecture de la	compression du infoHeader
 		int compression ; 
 		is.read(reinterpret_cast<char*>(&compression),4) ; 
 		image->Compression=compression;
-		cout << "Compression: " << image->Compression << endl ; 
+		//cout << "Compression: " << image->Compression << endl ; 
 
 		// lecture de la taille de l'image 
 		int tailleImage ; 
 		is.read(reinterpret_cast<char*>(&tailleImage),4) ; 
 		image->imageSize=tailleImage;
-		cout << "Image size: " << image->imageSize << endl ; 
+		//cout << "Image size: " << image->imageSize << endl ; 
 
 		// lecture de la résolution horizontale 
 		int horizontalResolution;
 		is.read(reinterpret_cast<char*>(&horizontalResolution),4);
 		image->heightPixelsPerMeter=horizontalResolution;
-		cout << "Resolution horizontal: " << image->heightPixelsPerMeter << endl;
+		//cout << "Resolution horizontal: " << image->heightPixelsPerMeter << endl;
 
 		// lecture de la résolution verticale 
 		int verticalResolution;
 		is.read(reinterpret_cast<char*>(&verticalResolution),4);
 		image->widthPixelsPerMeter=verticalResolution;
-		cout << "Resolution vertical: " << image->widthPixelsPerMeter << endl;
+		//cout << "Resolution vertical: " << image->widthPixelsPerMeter << endl;
 
 		//lecture du nombre de couleurs utilisées dans l'image 
 		int colorUsed;
 		is.read(reinterpret_cast<char*>(&colorUsed),4);
 		image->pixelsUsed=colorUsed;
-		cout << "Colors used: " << image->pixelsUsed << endl;
+		//cout << "Colors used: " << image->pixelsUsed << endl;
 
 		//lecture des couleurs importantes 
 		int importantColors;
@@ -406,33 +406,44 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		image->B=new unsigned int[width*height];
 		// le pitch est le nombre d'octet que prend une ligne => dans notre cas il faut que ça soit un multiple de 4 octets
 		int pitch=corrpitch[(3*width)%4];
+		cout << "Height :" << height << endl;
+		cout << "Width :" << width << endl;
 		for (int j=0; j<height; j++)
 		{
+			cout << "J : " << j << endl;
 			for(int i=0; i<width; i++)
 			{
-					// lecture et stockage dans rgb[]
-					is.read(reinterpret_cast<char*>(&rgb),3);
-					image->R[i*width + j]=rgb[2];
-					image->G[i*width + j]=rgb[1];
-					image->B[i*width + j]=rgb[0];
-					//cout << "Pixel[" << j <<"][" << i << "] : R[" << (int)image->R[i*width+j] << "], G[" << (int)image->G[i*width+j] << "], B[" << (int)image->B[i*width+j] << "]" << endl;
+				//cout << "	I : " << i << endl;
+				// lecture et stockage dans rgb[]
+				is.read(reinterpret_cast<char*>(&rgb),3);
+				image->R[j*width + i] = rgb[2];
+				image->G[j*width + i] = rgb[1];
+				image->B[j*width + i] = rgb[0];
+				//cout << "Pixel[" << j <<"][" << i << "] : R[" << (int)image->R[i*width+j] << "], G[" << (int)image->G[i*width+j] << "], B[" << (int)image->B[i*width+j] << "]" << endl;
 			}
 			// lecture du pitch à ignorer 
 			is.read(reinterpret_cast<char*>(&rgb),pitch);
 		}
 	}
+	cout << "ON A FINI CETTE PUTE" << endl;
 }
 
 /* Permet de transférer les informations utiles de la structure BMPImageHeader à la structure Image */
 Image convertBitmapToImage(BitMapImageHeader b)
 {	
 	Image image;
+	cout << "ON ENTRE DANS LA PLACEUUUH" << endl;
 	//initialisation du height et width de la structure Image
 	image.Height=b.Height;
 	image.Width=b.Width;
 	//allocation de mémoire
-	image.pixel=new double[image.Height*image.Width];
-	for(int i=0; i<(image.Height*image.Width); i++){
+	cout << "ON A GERE LES TAILLES HEHE" << endl;
+	cout << "La taille voulue = " << image.Height*image.Width << endl << "Height : " << image.Height << " Width : " << image.Width << endl;
+	image.pixel = new double[image.Height*image.Width];
+
+	cout << "PROUT PROUT CAMEMBER" << endl;
+	for(int i=0; i<(image.Height*image.Width); i++)
+	{
 			int lightness = b.R[i] + b.G[i] + b.B[i];
 			int exp1 = lightness / 8;
 			int man1 = lightness % 8;
@@ -442,6 +453,7 @@ Image convertBitmapToImage(BitMapImageHeader b)
 			image.pixel[i]=rgb_encoding;
 			//cout << "RGB PIXEL: " << image.pixel[i] << endl;
 	}
+	cout << "to continue" << endl;
 	return image;
 }
 
@@ -456,7 +468,7 @@ VectorXd allPixelMNIST(Mnist m)
 			pixels[i] = m.pixels[i][j] / 255.0;
 			if (isnan(pixels[i]))
 			{
-				cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
+				//cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
 				pixels[i] = 0;
 			}
 		}
@@ -479,74 +491,93 @@ vector<VectorXd> allMNIST(string fImage, string fLabel, vector<int> *labels)
 	return set;
 }
 
+VectorXd allPixelBitMap(Image i, int nbNeurones)
+{
+    //Compression de l'image jusqu'à ce sa taille <= nbNeurones
+    i = compression(i, nbNeurones);
+
+    //Passage d'un double** à un vecteur
+    VectorXd v(nbNeurones);
+    int cp = 0;
+    for(int a = 0; a < (int)i.Height; a++)
+	{
+        for(int b = 0; b < (int)i.Width; b++)
+		{
+            v[cp] = i.pixel[a * i.Width + b];
+            cp++;
+        }
+    }
+    
+    //Remplissage si besoin
+    while(cp < nbNeurones)
+	{
+        v[cp] = 0;
+        cp++;
+    }
+    
+    return v;
+}
+
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 {
-	// entraine => chien&chat => chat => chien
-	// entr => chiffre
-	
-	if (f == "chien&chat")
+	BitMapFileHeader fileheader;
+	BitMapImageHeader imageheader;
+	Image img;
+
+	//uniform_real_distribution<int> unif{0, 12499};
+	//default_random_engine re;
+	srand(time(0));
+	cout << "Bad alloc ?" << endl;
+	// pour bmpp
+	// rand pour aller dans les deux dossiers aléatoirement
+	string dirname;
+	vector<VectorXd> bmp;
+
+	for (int i = 0; i < 1000; i++)
 	{
-		BitMapFileHeader fileheader;
-		BitMapImageHeader imageheader;
-		Image im;
-
-		//uniform_real_distribution<int> unif{0, 12499};
-		//default_random_engine re;
-		srand(time(0));
-
-		// pour bmpp
-		// rand pour aller dans les deux dossiers aléatoirement
-		string dirname;
-		vector<VectorXd> bmp;
-
-		for (int i = 0; i < 1000; i++)
+		int choix;
+		//choix = unif(re) % 2; // choix 0 ou 1 pour chien ou chat
+		cout << "Name of folders" << endl;
+		choix = rand()%2;
+		if (choix == 0)		// le choix ça sera le label du coup
 		{
-			int choix;
-			//choix = unif(re) % 2; // choix 0 ou 1 pour chien ou chat
-			choix = rand()%2;
-			if (choix == 0)		// le choix ça sera le label du coup
-			{
-				dirname += "chat";
-			}
-			else
-			{
-				dirname += "chien";
-			}
-			// dirname = to_string(choix);
-			// ouvrir le directory ou concatener avec string f => doss_entr/chien_ou_chat
-			string open;
-			open = f + "/" + dirname;
-			// un rand pour piocher aléatoirement dans le dossier et garder le nom du dossier à chaque
-			int alea = rand()%12499; //unif(re);
-			open = open + to_string(alea) + ".bmp";
-			// lecture du fichier
-			recupAnalyseDonneesBmp(open, &fileheader, &imageheader);
-			// conversion en struct image
-			im = convertBitmapToImage(imageheader);
-			// conversion en vectorXd
-			VectorXd vec1;
-			///////////////////////////vec1 = allPixelBitMap(im, nbneurones);
-
-			// remplir vector<vectorXd>
-			bmp.push_back(vec1);
-			// remplir vector<int> label
-			labels->push_back(choix);
+			dirname = "/Cats";
 		}
-		return bmp;
-	}
-	/*else if()
-	{
+		else
+		{
+			dirname = "/Dogs";
+		}
+		// dirname = to_string(choix);
+		// ouvrir le directory ou concatener avec string f => doss_entr/chien_ou_chat
+		string open;
+		open = f + dirname;
+		cout << "Name of the folder : " << open << endl;
+		// un rand pour piocher aléatoirement dans le dossier et garder le nom du dossier à chaque
+		int alea = rand()%12499;
+		open = open + "/" + to_string(alea) + ".bmp";
+		cout << "Name of the file : " << open << endl;
 
-	}
-	else if()
-	{
+		// lecture du fichier
+		recupAnalyseDonneesBmp(open, &fileheader, &imageheader);
+		cout << "On a recup les bmp" << endl;
+		// conversion en struct image
+		img = convertBitmapToImage(imageheader);
+		cout << "On a recup l'image" << endl;
+		// conversion en vectorXd
 
-	}*/
-	else
-	{
-		cout << "Echec, quittage du prog" << endl;
-		exit(1);
+
+		cout << "Out with the old, ";
+		VectorXd vec1;
+		vec1 = allPixelBitMap(img, nbneurones);
+		cout << "In with the new" << endl;
+
+		// remplir vector<vectorXd>
+		bmp.push_back(vec1);
+		// remplir vector<int> label
+		labels->push_back(choix);
 	}
+	cout << "No bad alloc ?" << endl;
+	return bmp;
 }
 
 /*Permet de sauvegarder les statistiques de reussite du RN*/

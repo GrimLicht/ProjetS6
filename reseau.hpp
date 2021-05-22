@@ -3,7 +3,6 @@
 
 #include "couche.hpp"
 #include "ext.hpp"
-
 #include <iostream>
 #include <eigen3/Eigen/Dense>
 #include <map>
@@ -14,7 +13,6 @@ using namespace Eigen;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 using namespace std;
-
 
 class Reseau
 {

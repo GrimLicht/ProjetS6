@@ -16,7 +16,7 @@ int main(int argc, char **argv)
 	param.nbNeuronesEntree = 28*28;
 	param.nbNeuronesCache = 10;
 	param.nbNeuronesSortie = 26;
-	param.tauxApprentissage = 0.5;
+	param.tauxApprentissage = 30;
 
 	Reseau res(param);
 
@@ -42,25 +42,30 @@ int main(int argc, char **argv)
 	res.printReseau();
 	sauvegardeStat(res, "stat.txt");*/
 	
-	MNIST img;
+	/*MNIST img;
 	img = recupDonneesFileMNIST("emnist-letters-train-images-idx3-ubyte", "emnist-letters-train-labels-idx1-ubyte");
 	VectorXd MNISTAttendu = etiquetteMNIST(img, param.typeSim);
 	cout << "Vecteur Attendu : " << MNISTAttendu << endl;
 
 	VectorXd entree = allPixelMNIST(img);
 	bool verif = false;
-	//while(!verif)
-	//{
+	while(!verif)
+	{
 		verif = res.retropropagation(entree, MNISTAttendu);
-		//cout << "Matrice de poids vers la derniere couche :\n" << res.vCouches[res.nbCouches-2].mPoids << endl << "Vecteur de sortie :\n" << res.vCouches[res.nbCouches-1].vActivation << endl;
-	//}
+		cout << "Vecteur de sortie :\n" << res.vCouches[res.nbCouches-1].vActivation << endl;
+	}
 
 	int Reponse = res.simulation(entree);
 	std::cout << "Valeur de sortie : \n" <<  res.vCouches[res.nbCouches-1].vActivation << std::endl;
 	std::cout << "Le neurone de reponse est le : " << Reponse << std::endl;
 	char c = Reponse + 97;
-	std::cout << "La lettre de reponse est le : " << c << std::endl;
-	return 0;
+	std::cout << "La lettre de reponse est le : " << c << std::endl;*/
+
+	cout << "LA REPONSE EST : " << resToString(1, 0) << endl;
+	vector<int> labels;
+	allImage(&labels, "BMP/BMP", 28*28);
+
+	//return 0;
 
 
 

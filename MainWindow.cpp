@@ -136,6 +136,16 @@ QChartView *MainWindow::affGraphe(QString f)
     return chartView;
 }
 
+void MainWindow::resultat(string s)
+{
+    QString qstr = QString::fromStdString(s);
+    QLabel *resultat = new QLabel(qstr,this); /// i,' lost and gonna cry i give up
+    QLabel *reponse = new QLabel("Réponse du réseau : ",this);
+    QHBoxLayout *aff = new QHBoxLayout(this);
+    aff->addWidget(resultat);
+    aff->addWidget(reponse);
+}
+
 void MainWindow::sendToStructParam()
 {
     Parametres param;

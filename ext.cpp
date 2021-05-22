@@ -25,6 +25,34 @@ VectorXd aleaBiais(int nbNeurones)
 	return vB;
 }
 
+string resToString(int resultatSimulation, int typeSim)
+{
+	if(typeSim==0) //Chien & Chats
+	{
+		if(resultatSimulation == 0)
+		  return "chat";
+		else return "chien";
+	}
+	
+	else if(typeSim == 1) //Characteres
+	{
+		char a = ((char)resultatSimulation + 97);
+		string val = "";
+		val += a;
+		return val;
+	}
+	
+	else if(typeSim == 2) //Nombres
+	{
+		char a = ((char)resultatSimulation + 48);
+		string val = "";
+		val += a;
+		return val;
+	}
+	
+	return "invalide";
+}
+
 MatrixXd aleaPoids(int nbNeuronesSuivants, int nbNeurones)
 {
 	MatrixXd mP(nbNeuronesSuivants, nbNeurones);

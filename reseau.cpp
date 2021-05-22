@@ -143,7 +143,7 @@ VectorXd fast_sigmoide(VectorXd entree)
 			//cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
 			sortie[i] = 0;
 		}
-		cout << sortie[i] << endl;
+		//cout << sortie[i] << endl;
 	}
 	//cout << "Vecteur de sigmoide : \n" << sortie << endl;
 	return sortie;

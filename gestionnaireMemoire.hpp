@@ -68,11 +68,10 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(unsigned int nbNeurones);
 Image remplissage (unsigned int nbNeurones);
-//VectorXd allPixelBitMap(Image i);
+VectorXd allPixelBitMap(Image i);
 VectorXd etiquetteMNIST(Mnist m, int typeSimu);
 VectorXd allPixelMNIST(Mnist m);
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones);
-//string recupCheminAcces(QString chemin);
 void sauvegardeRN(Reseau r, string chemin);
 void sauvegardeStat(Reseau r, string chemin);
 
