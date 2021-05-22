@@ -177,7 +177,8 @@ MNIST recupDonneesFileMNISTSimulation(string fImage)
 
 	ifstream monFichier(fImage);
 
-	if(monFichier.is_open()){
+	if(monFichier.is_open())
+	{
 		int magicNumber=0;
 		int numberOfImages=0;
 		int numberOfRows=0;
@@ -494,8 +495,10 @@ vector<VectorXd> allMNIST(string fImage, string fLabel, vector<int> *labels)
 VectorXd allPixelBitMap(Image i, int nbNeurones)
 {
     //Compression de l'image jusqu'à ce sa taille <= nbNeurones
+	cout << "Compression pas encore commence" << endl;
     i = compression(i, nbNeurones);
 
+	cout << "COMPRESSION FINIE" << endl;
     //Passage d'un double** à un vecteur
     VectorXd v(nbNeurones);
     int cp = 0;
@@ -507,6 +510,8 @@ VectorXd allPixelBitMap(Image i, int nbNeurones)
             cp++;
         }
     }
+
+	cout << "Je sais meme pas ou je suis cense etre" << endl;
     
     //Remplissage si besoin
     while(cp < nbNeurones)
@@ -515,6 +520,8 @@ VectorXd allPixelBitMap(Image i, int nbNeurones)
         cp++;
     }
     
+	cout << "Ici c'est la fin au moins" << endl;
+
     return v;
 }
 
@@ -566,7 +573,7 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 		// conversion en vectorXd
 
 
-		cout << "Out with the old, ";
+		cout << "Out with the old, " << endl;
 		VectorXd vec1;
 		vec1 = allPixelBitMap(img, nbneurones);
 		cout << "In with the new" << endl;

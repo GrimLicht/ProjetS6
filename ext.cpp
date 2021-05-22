@@ -77,8 +77,8 @@ Image compression(Image i, int nbNeurones)
 	img.Height = i.Height;
 	img.etiquette = i.etiquette;
 
-	double * temp;
-
+	double * temp = new double[i.Width * i.Height];
+	
 	while(img.Width*img.Height > nbNeurones)
 	{
 		img.Width--; img.Height--;
@@ -89,6 +89,7 @@ Image compression(Image i, int nbNeurones)
 		}
 		i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
 	}
+	
 	return i;
 }
 

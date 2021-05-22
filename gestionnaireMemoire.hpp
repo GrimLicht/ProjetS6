@@ -64,11 +64,12 @@ typedef struct Mnist MNIST;
 //Méthodes du gestionnaire de mémoire
 int reverseInt(int i);
 MNIST recupDonneesFileMNIST(string fImage, string fLabel);
+MNIST recupDonneesFileMNISTSimulation(string fImage);
 void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHeader *image);
 Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(unsigned int nbNeurones);
 Image remplissage (unsigned int nbNeurones);
-VectorXd allPixelBitMap(Image i);
+VectorXd allPixelBitMap(Image i, int nbNeurones);
 VectorXd etiquetteMNIST(Mnist m, int typeSimu);
 VectorXd allPixelMNIST(Mnist m);
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones);

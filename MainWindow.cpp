@@ -23,20 +23,19 @@
 #include <QTextStream>
 #include <QAbstractAxis>
 #include <QPainter>
+#include <QLabel>
+#include<string>
 
 MainWindow::MainWindow()
 {
-
+ 
     setWindowTitle("Application Reseau de Neurone"); //nommer la fenetre principal
     resize(1920, 1080);
-
-    //permettra de creer une scene plus belle
-    /*QGraphicsView* view = new QGraphicsView;
-    QGraphicsScene* scene = new QGraphicsScene;
-    view->setFixedSize(1400, 720);
-    view->setScene(scene);
-    view->scene()->setSceneRect(-150, -150, view->size().width(), view->size().height());
-    this->setCentralWidget(view);*/
+    //initalisation de param qui est vide lors du lancement de l'app
+    p.nbCouches = 0;
+    p.nbNeuronesCache = 0;
+    p.nbNeuronesSortie = 0;
+    p.nbNeuronesEntree = 0;
 
     cheminDacces = QDir::currentPath();
     //creation d'un toolbar pour quitter l'app
@@ -70,17 +69,17 @@ MainWindow::MainWindow()
     //frame de bouton 2
     QFrame *f2 = new QFrame(boxButton);
     f2->resize(300, 300);
-    f2->setFrameShape(QFrame::Box);                   //same qu'au dessus
-    f2->setFrameShadow(QFrame::Raised);               //same qu'au dessus
-    simulation = new QPushButton("Simulation", this); //param 1 texte dans le button et param2 c'est definir le parent
+    f2->setFrameShape(QFrame::Box);                    //same qu'au dessus
+    f2->setFrameShadow(QFrame::Raised);                //same qu'au dessus
+    simulationP = new QPushButton("Simulation", this); //param 1 texte dans le button et param2 c'est definir le parent
     apprentissage = new QPushButton("Apprentissage", this);
     sauvegardeR = new QPushButton("Sauvegarder le réseau", this);
     sauvegardeS = new QPushButton("Sauvegarder les stats", this);
-    connect(simulation, SIGNAL(clicked()), this, SLOT(openDirectory()));
-    connect(sauvegardeR, SIGNAL(clicked()), this, SLOT(quandOnSaveR()));
-    connect(sauvegardeS, SIGNAL(clicked()), this, SLOT(quandOnSaveS()));
+    connect(simulationP, SIGNAL(clicked()), this, SLOT(openDirectory())); //permet de données les actions aux bouton
+    connect(sauvegardeR, SIGNAL(clicked()), this, SLOT(quandOnSaveR()));  //permet de données les actions aux bouton
+    connect(sauvegardeS, SIGNAL(clicked()), this, SLOT(quandOnSaveS()));  //permet de données les actions aux bouton
     boxButton2 = new QVBoxLayout(this);
-    boxButton2->addWidget(simulation);
+    boxButton2->addWidget(simulationP);
     boxButton2->addWidget(apprentissage);
     boxButton2->addWidget(sauvegardeR);
     boxButton2->addWidget(sauvegardeS);
@@ -102,9 +101,9 @@ QChartView *MainWindow::affGraphe(QString f)
     QFile file(f);
     if (!file.exists())
     {
-        QMessageBox::warning(nullptr, "erreur", "ce fichier n'existe pas");
+        QMessageBox::warning(nullptr, "Attention", "Vous n'avez pas selectionné de fichier de sauvegarde pour le graphe de progression");
     }
-    if (!file.open(QFile::ReadOnly))
+    else if (!file.open(QFile::ReadOnly))
     {
         QMessageBox::warning(nullptr, cheminDacces, "Erreur d'ouverture!");
     }
@@ -136,55 +135,85 @@ QChartView *MainWindow::affGraphe(QString f)
     return chartView;
 }
 
-void MainWindow::resultat(string s)
-{
-    QString qstr = QString::fromStdString(s);
-    QLabel *resultat = new QLabel(qstr,this); /// i,' lost and gonna cry i give up
-    QLabel *reponse = new QLabel("Réponse du réseau : ",this);
-    QHBoxLayout *aff = new QHBoxLayout(this);
-    aff->addWidget(resultat);
-    aff->addWidget(reponse);
-}
-
 void MainWindow::sendToStructParam()
 {
-    Parametres param;
+    // si oublie de remplir un des champs
+    if (champCC->text() == "" || champNC->text() == "" || champNE->text() == "")
+    {
+        QMessageBox(QMessageBox::Warning, "Attention", "Un de vos champs est resté vide, veuillez recréer un Réseau", QMessageBox::Ok, this).exec();
+    }
+    else
+    {   
+        bool ignore = true;
+        if (p.nbCouches != 0)
+        {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Attention");
+            msgBox.setText("Un Réseau de neurones existe déjà! En créer un nouveau l'écraserait");
+            msgBox.setStandardButtons(QMessageBox::Save |QMessageBox::Ignore |QMessageBox::Cancel);
+            int ret = msgBox.exec();
+            switch (ret)
+            {
+            case QMessageBox::Save:
+                quandOnSaveR();
+                qDebug() << "la save c'est bien passer";
+                break;
+            case QMessageBox::Ignore:
+                break;
+            case QMessageBox::Cancel:
+                qDebug() << "vous avez annuler";
+                ignore = false;
+            }
+        }
+        if(ignore)
+        {
+            p.nbCouches = champCC->text().toInt() + 2;
+            p.nbNeuronesCache = champNC->text().toInt();
+            if (typeSimulation->currentText() == "image")
+            {
+                p.typeSim = 0;
+                p.nbNeuronesSortie = 2;
+                p.nbNeuronesEntree = champNE->text().toInt();
+            }
+            if (typeSimulation->currentText() == "lettre")
+            {
+                p.typeSim = 1;
+                p.nbNeuronesSortie = 26;
+                p.nbNeuronesEntree = 784;
+            }
+            if (typeSimulation->currentText() == "chiffre")
+            {
+                p.typeSim = 2;
+                p.nbNeuronesSortie = 10;
+                p.nbNeuronesEntree = 784;
+            }
 
-    param.nbCouches = champCC->text().toInt() + 2;
-    param.nbNeuronesCache = champNC->text().toInt();
-    if (typeSimulation->currentText() == "image")
-    {
-        param.typeSim = 0;
-        param.nbNeuronesSortie = 2;
-        param.nbNeuronesEntree = champNE->text().toInt();
-    }
-    if (typeSimulation->currentText() == "lettre")
-    {
-        param.typeSim = 1;
-        param.nbNeuronesSortie = 26;
-        param.nbNeuronesEntree = 784;
-    }
-    if (typeSimulation->currentText() == "chiffre")
-    {
-        param.typeSim = 2;
-        param.nbNeuronesSortie = 10;
-        param.nbNeuronesEntree = 784;
-    }
+            p.tauxApprentissage = tauxApp->value();
 
-    param.tauxApprentissage = tauxApp->value();
-    //return param;
-    //creer le reseau a l'aide des para dela fenetres
-    //rUtilisation = new Reseau(param);
-    // rUtilisation = make_shared<Reseau>(new Reseau(param));
-    shared_ptr<Reseau> rUtilisation(new Reseau(param));
+            shared_ptr<Reseau> temp(new Reseau(p));
+            rUtilisation = temp;
+            temp.reset();
+            paint = 1;
+            QMessageBox(QMessageBox::Information, "Felicitations", "Bravo! vous venez de créer un reseau de Neurones qui reconnait des " + typeSimulation->currentText(), QMessageBox::Ok, this).exec();
+        }
+    }
 }
 
-QString MainWindow::getChemin() { return cheminDacces; }
+//QString MainWindow::getChemin() { return cheminDacces; }
 
 QString MainWindow::openDirectory()
 {
     QString file = QFileDialog::getOpenFileName(this, "ouvrir un fichier", QDir::homePath());
     QFileInfo fi(file);
+    //fenetre si on annul l'operation
+    if (file == "")
+    {
+        QMessageBox mes(this);
+        mes.setWindowTitle("Attention");
+        mes.setText("Vous avez annulé(e), ou il y a eu un problème");
+        mes.setIcon(QMessageBox::Warning);
+        mes.exec();
+    }
     //cheminDacces = QFileDialog::getOpenFileName(this, "ouvrir un fichier", QDir::homePath());
     //QFileInfo fi(cheminDacces);
     //
@@ -236,6 +265,9 @@ void MainWindow::saisieParam()
     tauxApp->setValue(0.8);
     tauxApp->setSingleStep(0.1);
     formLayout->addRow("Taux d'apprentissage: ", tauxApp);
+    if(typeSimulation->currentText() == "lettre" || typeSimulation->currentText() == "chiffre"){champNE->setText("784");}
+    champCC->setText("0");
+    champNC->setText("0");
 
     QString s("vous permet de choisir le type de reconnaissance de votre reseau\n");
     s.push_back("lettre pour une reconnaissance de de lettre.\n");
@@ -250,46 +282,23 @@ void MainWindow::saisieParam()
 
     //creation d'un troisième layout honrizontal pour les bouttons
     QHBoxLayout *layoutH = new QHBoxLayout(fenetrePara);
-    QPushButton *valider = new QPushButton("Valider", fenetrePara); //creer un bouton
     QPushButton *close = new QPushButton("close", fenetrePara);     //creer un bouton
-
+    QPushButton *valider = new QPushButton("Valider", fenetrePara); //creer un bouton
+    
     //add les buttons au layout
     layoutH->addWidget(close);
     layoutH->addWidget(valider);
     layoutPrincipal->addLayout(layoutH);
 
-    //Lambda part
-    /* auto lambda = [=](){
-    Parametres p;
-    p = sendToStructParam(typeSimulation->currentText(), champCC->value(),champNE->value(), champNC->value(), tauxApp->value());
-    return p;
-    };*/
-
-    //valider = qobject_cast<QPushButton*>(sender());
-    //Q_SIGNAL(valider != nullptr);
-
-    //connect(valider, SIGNAL(clicked()), signalMapper, SLOT(map()));
-    //signalMapper->setMapping(valider, 0);
     connect(close, SIGNAL(clicked()), fenetrePara, SLOT(close()));
-    connect(valider, SIGNAL(clicked()), this, SLOT(sendToStructParam()));
+    connect(valider, SIGNAL(clicked()), this, SLOT(sendToStructParam())); // creer reseau
+    connect(valider, SIGNAL(clicked()), fenetrePara, SLOT(close()));
 
     groupBox->setLayout(formLayout);         //va permettre de bien positionner la box (je crois en disant que cette box respecte ce layout)
     fenetrePara->setLayout(layoutPrincipal); //adapter la taille de la fentre au element dedans
     fenetrePara->show();                     // montrer la fenetrePara
 }
 
-/*
-void MainWindow::infosParametre(){
-
-    QMessageBox infosBox(fenetrePara);
-    infosBox.setWindowTitle("information sur type de simulation");
-    infosBox.setText("Vous pouvez selectionner 3 type de simulation");
-    infosBox.setDetailedText("lettre pour une reconnaissance de de lettre. chiffre pour une reconnaissance de chiffre. image pour reconnaitre des chat.");
-    infosBox.setIcon(QMessageBox::Information);
-    infosBox.setStandardButtons(QMessageBox::Ok);
-    infosBox.exec();
-
-}*/
 QString MainWindow::saveFileName()
 {
 
@@ -328,62 +337,62 @@ void MainWindow::quandOnCharge()
     /*1*/
     //recuperation du fichier permettant le chargement du reseau
     cheminDacces = openDirectory();
+    QFileInfo f(cheminDacces);
+
     /*2*/
     /*On charge le reseau*/
-    auto pTemp = chargerRN(cheminDacces, &uPoids, &uBiais);
-    /*3*/
-    /*On creer le reseau*/
-    //auto *rUtilisationBis = new Reseau(pTemp, uPoids, uBiais);
-    shared_ptr<Reseau> rUtilisation(new Reseau(pTemp, uPoids, uBiais));
-
-    /*4*/
-    //On ouvre le fichier des stats du reseau charger
-    cheminDacces = openDirectory();
-    /*5*/
-    //place le graphe dans la fenetre
-    QWidget *grapheP = new QWidget(this);
-    grapheP->resize(720, 400);
-    grapheP->move(900, 600);
-    QFrame *f4 = new QFrame(grapheP);
-    f4->resize(500, 300);
-    f4->setFrameShape(QFrame::Panel);   //effet sur la frame
-    f4->setFrameShadow(QFrame::Raised); //effet sur la frame
-    graphe = new QBoxLayout(QBoxLayout::LeftToRight, this);
-    /*6*/
-    //on charge alors avec le file stat recup et on l'adapte a la Mainwindow
-    graphe->addWidget(affGraphe(cheminDacces));
-    f4->setLayout(graphe);
-    grapheMatrice = new QVBoxLayout(this);
-    grapheMatrice->addWidget(f4);
-    grapheP->setLayout(grapheMatrice);
-    /*7*/
-    //on l'affiche
-    grapheP->show();
-    /*8*/
-    //appel la fonction pour afficher le tableau RN
-    afficheRN(pTemp, &uPoids);
-    /*9*/
-    //On recupere le parametres qui a ini le Reseau
-    p = pTemp;
-    /*10*/
-    //On modifie le paint pour update le paintevent et aff la structure
-    paint = true; // pour peinte event
-
-    update();
+    if (cheminDacces != "")
+    {
+        auto pTemp = chargerRN(cheminDacces, &uPoids, &uBiais);
+        /*3*/
+        /*On creer le reseau*/
+        shared_ptr<Reseau> temp(new Reseau(pTemp, uPoids, uBiais));
+        rUtilisation = temp;
+        temp.reset();
+        /*4*/
+        //On ouvre le fichier des stats du reseau charger
+        cheminDacces = openDirectory();
+        /*5*/
+        //place le graphe dans la fenetre
+        QWidget *grapheP = new QWidget(this);
+        grapheP->resize(720, 400);
+        grapheP->move(900, 600);
+        QFrame *f4 = new QFrame(grapheP);
+        f4->resize(500, 300);               
+        f4->setFrameShape(QFrame::Panel);   //effet sur la frame
+        f4->setFrameShadow(QFrame::Raised); //effet sur la frame
+        graphe = new QBoxLayout(QBoxLayout::LeftToRight, this);
+        /*6*/
+        //on charge alors avec le file stat recup et on l'adapte a la Mainwindow
+        graphe->addWidget(affGraphe(cheminDacces));
+        f4->setLayout(graphe);
+        grapheP->setLayout(graphe);
+        /*7*/
+        //on l'affiche
+        grapheP->show();
+        /*8*/
+        //appel la fonction pour afficher le tableau RN
+        afficheRN(pTemp, &uPoids);
+        /*9*/
+        //On recupere le parametres qui a ini le Reseau
+        p = pTemp;
+        /*10*/
+        //On modifie le paint pour update le paintevent et aff la structure
+        paint = true; // pour peinte event
+        update();
+    }
 }
 Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, vector<VectorXd> *vBiais)
 {
-    //vector<double> vBiais;
-
     Parametres p;
     QFile file(fichierTXT);
     if (!file.exists())
     {
-        QMessageBox::warning(nullptr, "erreur", "ce fichier n'existe pas");
+        QMessageBox::warning(nullptr, "Erreur", "Ce fichier n'existe pas");
     }
     if (!file.open(QFile::ReadOnly))
     {
-        QMessageBox::warning(nullptr, fichierTXT, "Erreur d'ouverture!");
+        QMessageBox::warning(nullptr, "Erreur", "Erreur lors de l'ouverture! du fichier" + fichierTXT);
     }
     QTextStream data(&file);
     while (!data.atEnd())
@@ -508,16 +517,6 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
                             j++;
                         }
                     }
-
-                    /*if(i < p.nbCouches-2){
-                    j %= p.nbNeuronesCache; //matrice de taille du nb de neurones de la couche suivante
-                    if(j == 0)
-                        k++;
-                }
-                else{
-                    j %= p.nbNeuronesSortie; //matrice de taille du nb de neurones de la couche de sortie
-                    if(j == 0)
-                        k++;*/
                 }
             }
             mPoids->emplace_back(h);
@@ -525,10 +524,6 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
             param = "";
             k = j = 0;
         }
-        //auto line = data.readLine(); //recup toute une ligne
-        //qDebug() << line; // afficher ce qui est recup dans la console
-
-        //int j = 0;
         for (int i = 0; i < p.nbCouches; i++)
         {
             int taille1;
@@ -574,15 +569,34 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
 
 void MainWindow::afficherStructure()
 {
+    double compress;
+    double entree, cachee, sortie, couche;
 
-    //mtn on va definir une zone ou on va peindre
-    /**
-     * creer un widget qui va etre d'abors l'endroit ou on dessinera
-     * cette zone doit etre de la taille de l'espace dans mainwindow qu'on lui a donner
-     * creer des points qui vont servir de repere
-     * faire un rectangle blanc pour bien la delimiter
-     * on va dessiner dedans des cercle 
-     * */
+    entree = (double)p.nbNeuronesEntree;
+    cachee = (double)p.nbNeuronesCache;
+    couche = (double)p.nbCouches-2;
+
+    if(p.nbCouches > 17)
+        p.nbCouches = 17; //on aura max 15 couches cachees
+    couche = couche/(double)(p.nbCouches-2);
+    
+    if(p.nbNeuronesEntree > 100)
+        p.nbNeuronesEntree /= 10; 
+    if((p.nbNeuronesEntree > 20) && (p.nbNeuronesEntree <= 100)) //si il y a plus de 20 neurones d'entree, on aura toujours entre 4 et 20 cercles pour les representer
+    {
+        compress = p.nbNeuronesEntree/25.0;
+        p.nbNeuronesEntree = compress*5;
+    }
+    entree = entree/(double)p.nbNeuronesEntree;
+
+    if(p.nbNeuronesCache > 100)
+        p.nbNeuronesCache /= 10; 
+    if((p.nbNeuronesCache > 20) && (p.nbNeuronesCache <= 100)) //si il y a plus de 20 neurones par couche cachee, on aura toujours entre 4 et 20 cercles pour les representer
+    {
+        compress = p.nbNeuronesCache/25.0;
+        p.nbNeuronesCache = compress*5;
+    }
+    cachee = cachee/(double)p.nbNeuronesCache;
 
     //creation point de reperes area
     int largeur = 1020;
@@ -592,31 +606,31 @@ void MainWindow::afficherStructure()
     //creation d'un Qpainter pour dessiner ce qu'on a a dessiner
     QPainter pinceau(this);
 
+
     //affiche le rectangle blanc en fond
     pinceau.setBrush(Qt::white);
     QRect back(pos, QSize(largeur, hauteur));
     pinceau.drawRect(back);              //couleur fond
-    pinceau.setPen(Qt::black);           //couleur pinceau
-    pinceau.setFont(QFont("Arial", 20)); //proprieter font
-    pinceau.save();
+    
     //ecrit de text au mileu
-
-    //puis on cree le cercle qui va etre afficher partout
-
-    /**
- * couleur pr couche entree pinceau.setBrush(colorV)
- * couleur pr couche middle pinceau.setBrush(colorB)
- * couleur pr couche sortie pinceau.setBrush(colorR)
- * */
+    pinceau.setFont(QFont("Arial", 12));
+    pinceau.setPen(Qt::black);           //couleur pinceau
+    pinceau.save();
+    pinceau.drawText(910,70, "1 cercle représente " + QString::number((int)entree) + " neurones");
+    pinceau.drawText(1300,70, "1 cercle représente " + QString::number((int)cachee) + " neurones");
+    pinceau.drawText(1265,530, "1 colonne représente " + QString::number(couche) + " couches cachées");
+    pinceau.restore();
 
     //algo pour couche entree
     //reper pour texte a faire
     pos.setX(pos.x() + 105);
     pos.setY(pos.y() + 50);
+    pinceau.setFont(QFont("Arial", 20)); //propriete police
+    pinceau.save();
     pinceau.drawText(pos, "Input");
     pinceau.restore();
-
-    //repere emplacement pour draw neurone couche entrer
+  
+    //repere emplacement pour draw neurone couche entree
     QSize in(255, 515);
     double largeurI = 1155.0;
     QPoint CI(1028, 110);
@@ -644,19 +658,16 @@ void MainWindow::afficherStructure()
 
     for (double i = 110.0; i < 515.0; i += 405.0 / p.nbNeuronesEntree)
     {
-        // pinceau.drawLine(CI.x(),i,CM.x(),i);
         pinceau.drawEllipse(CI.x(), i, 15, 15);
     }
     pinceau.restore();
 
     //algo pour couche middle
     pos.setX(pos.x() + 300);
-    pinceau.drawText(pos, "Couches Cachers");
+    pinceau.drawText(pos, "Couches Cachées");
     //repere emplacement pour draw neurone couche midd
 
-    //QRect rect(CI, QSize(15, 15)); //(posX,posy,largeur, hauteur)
     //parametres couleur
-
     pinceau.setBrush(Qt::blue);
     pinceau.save();
     auto plus = 405.0 / p.nbNeuronesCache;
@@ -692,12 +703,74 @@ void MainWindow::afficherStructure()
 
 void MainWindow::quandOnLanceApprentissage()
 {
+    
 }
+
 void MainWindow::quandOnSim()
 {
     /*1*/
     //select le fichier a utiliser
     cheminDacces = openDirectory();
+    if (cheminDacces != "")
+    {
+        QFileInfo f(cheminDacces);
+        auto dir = f.path(); //permet d'avoir le chemin du dir
+        /*2*/
+        //conversion de l'image choisi en bmp ou MNIST selon type simulation
+        VectorXd all;
+        if (p.typeSim == 0)
+        {
+            BitMapFileHeader header;
+            BitMapImageHeader image;
+            recupAnalyseDonneesBmp(dir.toStdString(), &header, &image);
+            Image img = convertBitmapToImage(image);
+            /*4*/
+            //transforme image en vecteur
+            all = allPixelBitMap(img , p.nbNeuronesEntree);
+        }
+
+        //-------------------------------------------------------------------
+
+        if (p.typeSim == 1 || p.typeSim == 2)
+        {
+            MNIST image = recupDonneesFileMNISTSimulation(dir.toStdString());
+            /*3*/
+            //On recupere l'etiquette
+            VectorXd attendu = etiquetteMNIST(image, p.typeSim);
+            /*4*/
+            //transforme image en vecteur
+            all = allPixelMNIST(image);
+        }
+
+        /*5*/
+        //lance la simulation
+        int reponse = rUtilisation->simulation(all);
+        /*6*/
+        //recup la reponse dans la map
+        string s = resToString(reponse, p.typeSim);
+        /*7*/
+        //affichage du resultat sur l'interface
+        resultat(s);
+        //simulation(entrees);
+    }
+}
+void MainWindow::resultat(string resultatMap){
+
+    QString qstr = QString::fromStdString(resultatMap);//conversion en Qstring
+    QLabel *resultat = new QLabel(qstr,this); 
+    QLabel *reponse = new QLabel("Réponse du réseau :",this);
+    QHBoxLayout *aff = new QHBoxLayout(this);
+    aff->addWidget(reponse);
+    aff->addWidget(resultat);
+    QFont cara("Times",24); 
+    resultat->setFont(cara);
+    reponse->setFont(cara);
+    QFrame *laFrame = new QFrame(this);
+    laFrame->resize(390, 150);
+    laFrame->setFrameShape(QFrame::Box);                    //same qu'au dessus
+    laFrame->setFrameShadow(QFrame::Raised);  
+    laFrame->move(10,650);
+    laFrame->setLayout(aff);   
 }
 void MainWindow::quandOnSaveR()
 {
@@ -715,16 +788,18 @@ void MainWindow::quandOnSaveR()
     //select le fichier ou on va save
     sauvegardeRN(r, t);*/
 }
+
 void MainWindow::afficheRN(Parametres param, vector<MatrixXd> *mPoids)
 {
 
-    QMainWindow*fenetreRN = new QMainWindow();
+    QMainWindow *fenetreRN = new QMainWindow();
     fenetreRN->resize(1800, 1080);
+    fenetreRN->setWindowTitle("Tableau des poids du réseau neuronal");
     //fenetreRN->setWindowFlags(Qt::CustomizeWindowHint | Qt::FramelessWindowHint);
     QTableWidget *entree = new QTableWidget(param.nbNeuronesEntree, param.nbNeuronesCache, fenetreRN);
-    QTableWidget *cachees = new QTableWidget(param.nbNeuronesCache * param.nbCouches, param.nbNeuronesCache, fenetreRN);
+    QTableWidget *cachees = new QTableWidget(param.nbNeuronesCache * (param.nbCouches - 2), param.nbNeuronesCache, fenetreRN);
     QTableWidget *sortie = new QTableWidget(param.nbNeuronesCache, param.nbNeuronesSortie, fenetreRN);
- 
+
     cachees->resize(640, 1080);
     entree->resize(640, 1080);
     sortie->resize(640, 1080);
@@ -732,10 +807,10 @@ void MainWindow::afficheRN(Parametres param, vector<MatrixXd> *mPoids)
     sortie->move(1280, 0);
 
     QTableWidgetItem *all = nullptr; //pointeur pour les items (pour remplir le tableau)
-                   //matrice qui contiendra les couches une par une
+                                     //matrice qui contiendra les couches une par une
     unsigned int largeur;
     unsigned int hauteur;
-    unsigned int bordel;
+    unsigned int bordel; //il sert, mais c'est complique a expliquer
 
     //mPoids->pop_back(); //la matrice de -1
     for (unsigned int i = 0; i < param.nbCouches - 1; i++) //une iteration par couche
@@ -745,24 +820,28 @@ void MainWindow::afficheRN(Parametres param, vector<MatrixXd> *mPoids)
         {
             largeur = param.nbNeuronesSortie;
             hauteur = param.nbNeuronesCache;
-
         }
-        else if (i == param.nbCouches - 2) //la matrice vers la premiere couche cachee
+        else if (i == param.nbCouches - 2) //la matrice de la couche d'entree
         {
             largeur = param.nbNeuronesCache;
             hauteur = param.nbNeuronesEntree;
         }
-        else{ //couche cachee vers couche cachee
-        largeur = hauteur = param.nbNeuronesCache;}
-        MatrixXd mCouches(hauteur,largeur);
+        else
+        { //couche cachee vers couche cachee
+            largeur = hauteur = param.nbNeuronesCache - 2;
+        }
+
+        MatrixXd mCouches(hauteur, largeur);
         qDebug() << "l =" << largeur << "h = " << hauteur;
         mCouches = mPoids->back();
+
         for (unsigned int j = 0; j < hauteur; j++) //une iteration par ligne de la matrice
         {
-            for (unsigned int k = 0; k < largeur; k++){                      //une iteration par colonne de la matrice
+            for (unsigned int k = 0; k < largeur; k++)
+            {                                                                //une iteration par colonne de la matrice
                 all = new QTableWidgetItem(QString::number(mCouches(j, k))); //on cree un item pour stocker la valeur de la case de la matrice
-                qDebug() << mCouches(j,k);
-                if (!i)                                                      //matrice vers couche de sortie
+                //qDebug() << mCouches(j, k);
+                if (!i) //matrice vers couche de sortie
                 {
                     sortie->setItem(j, k, all);
                 }
@@ -772,18 +851,18 @@ void MainWindow::afficheRN(Parametres param, vector<MatrixXd> *mPoids)
                 }
                 else
                 {
-                    bordel = param.nbNeuronesCache * (param.nbCouches-2-i); //la ligne de depart, dans le tableau, de la matrice (c'est un BORDEL sans nom ('fin si, du coup))
-                    cachees->setItem(j + bordel, k, all); //on additione j a la ligne de depart
+                    bordel = param.nbNeuronesCache * (param.nbCouches - 2 - i); //la ligne de depart, dans le tableau, de la matrice (c'est un BORDEL sans nom ('fin si, du coup))
+                    cachees->setItem(j + bordel, k, all);                       //on additione j a la ligne de depart
                 }
+                qDebug() << mCouches(j, k);
             }
         }
         mPoids->pop_back();
-
     }
-    delete all;
     fenetreRN->show();
 }
 void MainWindow::quandOnSaveS()
+
 {
     /*1*/
     //select le fichier ou on va save
