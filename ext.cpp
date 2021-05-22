@@ -89,8 +89,8 @@ Image compression(Image i, int nbNeurones)
 		}
 		i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
 	}
-	
-	return i;
+	img.pixel = i.pixel;
+	return img;
 }
 
 /*void remplissage(MatrixXd *aRemplir)

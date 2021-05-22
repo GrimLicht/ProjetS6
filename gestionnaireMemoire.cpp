@@ -392,14 +392,14 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		int importantColors;
 		is.read(reinterpret_cast<char*>(&importantColors),4);
 		image->importantpixels=importantColors;
-		cout << "Important colors: " << image->importantpixels << endl;
+		//cout << "Important colors: " << image->importantpixels << endl;
 		
 		//No colortable because bits per pixel > 8 (24)
 
 		//Pixel
 
 		
-		cout << "///////////////////PIXEL///////////////////" << endl;
+		//cout << "///////////////////PIXEL///////////////////" << endl;
 		unsigned char rgb[3]; // un tableau contenant les trois composants R, G et B 
 		// allocation de mémoire : 
 		image->R=new unsigned int[width*height];
@@ -407,11 +407,11 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		image->B=new unsigned int[width*height];
 		// le pitch est le nombre d'octet que prend une ligne => dans notre cas il faut que ça soit un multiple de 4 octets
 		int pitch=corrpitch[(3*width)%4];
-		cout << "Height :" << height << endl;
-		cout << "Width :" << width << endl;
+		//cout << "Height :" << height << endl;
+		//cout << "Width :" << width << endl;
 		for (int j=0; j<height; j++)
 		{
-			cout << "J : " << j << endl;
+			//cout << "J : " << j << endl;
 			for(int i=0; i<width; i++)
 			{
 				//cout << "	I : " << i << endl;
@@ -426,23 +426,18 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 			is.read(reinterpret_cast<char*>(&rgb),pitch);
 		}
 	}
-	cout << "ON A FINI CETTE PUTE" << endl;
 }
 
 /* Permet de transférer les informations utiles de la structure BMPImageHeader à la structure Image */
 Image convertBitmapToImage(BitMapImageHeader b)
 {	
 	Image image;
-	cout << "ON ENTRE DANS LA PLACEUUUH" << endl;
 	//initialisation du height et width de la structure Image
 	image.Height=b.Height;
 	image.Width=b.Width;
 	//allocation de mémoire
-	cout << "ON A GERE LES TAILLES HEHE" << endl;
-	cout << "La taille voulue = " << image.Height*image.Width << endl << "Height : " << image.Height << " Width : " << image.Width << endl;
 	image.pixel = new double[image.Height*image.Width];
 
-	cout << "PROUT PROUT CAMEMBER" << endl;
 	for(int i=0; i<(image.Height*image.Width); i++)
 	{
 			int lightness = b.R[i] + b.G[i] + b.B[i];
@@ -454,7 +449,6 @@ Image convertBitmapToImage(BitMapImageHeader b)
 			image.pixel[i]=rgb_encoding;
 			//cout << "RGB PIXEL: " << image.pixel[i] << endl;
 	}
-	cout << "to continue" << endl;
 	return image;
 }
 
@@ -495,10 +489,10 @@ vector<VectorXd> allMNIST(string fImage, string fLabel, vector<int> *labels)
 VectorXd allPixelBitMap(Image i, int nbNeurones)
 {
     //Compression de l'image jusqu'à ce sa taille <= nbNeurones
-	cout << "Compression pas encore commence" << endl;
     i = compression(i, nbNeurones);
 
-	cout << "COMPRESSION FINIE" << endl;
+	cout << "Nb neurones : " << nbNeurones << endl;
+	cout << "Size of img : " << i.Height << " " << i.Width << endl;
     //Passage d'un double** à un vecteur
     VectorXd v(nbNeurones);
     int cp = 0;
@@ -534,17 +528,17 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 	//uniform_real_distribution<int> unif{0, 12499};
 	//default_random_engine re;
 	srand(time(0));
-	cout << "Bad alloc ?" << endl;
+//	cout << "Bad alloc ?" << endl;
 	// pour bmpp
 	// rand pour aller dans les deux dossiers aléatoirement
 	string dirname;
 	vector<VectorXd> bmp;
 
-	for (int i = 0; i < 1000; i++)
-	{
+	//for (int i = 0; i < 1000; i++)
+//	{
 		int choix;
 		//choix = unif(re) % 2; // choix 0 ou 1 pour chien ou chat
-		cout << "Name of folders" << endl;
+		//cout << "Name of folders" << endl;
 		choix = rand()%2;
 		if (choix == 0)		// le choix ça sera le label du coup
 		{
@@ -582,7 +576,7 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 		bmp.push_back(vec1);
 		// remplir vector<int> label
 		labels->push_back(choix);
-	}
+	//}
 	cout << "No bad alloc ?" << endl;
 	return bmp;
 }
