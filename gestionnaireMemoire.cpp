@@ -120,7 +120,8 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 
 	}
 
-	else{
+	else
+	{
 		cout << "Impossible d'ouvrir le fichier d'image" << endl;
 	}
 
@@ -449,6 +450,9 @@ Image convertBitmapToImage(BitMapImageHeader b)
 			image.pixel[i]=rgb_encoding;
 			//cout << "RGB PIXEL: " << image.pixel[i] << endl;
 	}
+	delete(b.R);
+	delete(b.G);
+	delete(b.B);
 	return image;
 }
 
@@ -486,37 +490,54 @@ vector<VectorXd> allMNIST(string fImage, string fLabel, vector<int> *labels)
 	return set;
 }
 
+Image compression(Image i, int nbNeurones)
+{
+	Image img;
+	img.Width = i.Width;
+	img.Height = i.Height;
+	img.etiquette = i.etiquette;
+
+	double * temp = new double[i.Width * i.Height];
+	
+	while(img.Width*img.Height > nbNeurones)
+	{
+		img.Width--; img.Height--;
+		for(int m = 0; m < img.Height; m++)
+		{
+			for(int n = 0; n < img.Width; n++) 
+				temp[m*img.Width + n] = (i.pixel[m*img.Width + n] + i.pixel[(m+1)*img.Width] + i.pixel[m*img.Width + n+1] + i.pixel[(m+1)*img.Width + n+1])/4; 
+		}
+		i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
+	}
+	img.pixel = i.pixel;
+	return img;
+}
+
 VectorXd allPixelBitMap(Image i, int nbNeurones)
 {
-    //Compression de l'image jusqu'à ce sa taille <= nbNeurones
-    i = compression(i, nbNeurones);
+	//Compression de l'image jusqu'à ce sa taille <= nbNeurones
+	i = compression(i, nbNeurones);
 
-	cout << "Nb neurones : " << nbNeurones << endl;
-	cout << "Size of img : " << i.Height << " " << i.Width << endl;
-    //Passage d'un double** à un vecteur
-    VectorXd v(nbNeurones);
-    int cp = 0;
-    for(int a = 0; a < (int)i.Height; a++)
+	//Passage d'un double** à un vecteur
+	VectorXd v(nbNeurones);
+	int cp = 0;
+	for(int a = 0; a < (int)i.Height; a++)
 	{
-        for(int b = 0; b < (int)i.Width; b++)
+		for(int b = 0; b < (int)i.Width; b++)
 		{
-            v[cp] = i.pixel[a * i.Width + b];
-            cp++;
-        }
-    }
+			v[cp] = i.pixel[a * i.Width + b];
+			cp++;
+		}
+	}
 
-	cout << "Je sais meme pas ou je suis cense etre" << endl;
-    
-    //Remplissage si besoin
-    while(cp < nbNeurones)
+	//Remplissage si besoin
+	while(cp < nbNeurones)
 	{
-        v[cp] = 0;
-        cp++;
-    }
-    
-	cout << "Ici c'est la fin au moins" << endl;
+		v[cp] = 0;
+		cp++;
+	}
 
-    return v;
+	return v;
 }
 
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
@@ -534,8 +555,9 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 	string dirname;
 	vector<VectorXd> bmp;
 
-	//for (int i = 0; i < 1000; i++)
-//	{
+	for (int i = 0; i < 10; i++)
+	{
+		cout << "Image : " << i << endl;
 		int choix;
 		//choix = unif(re) % 2; // choix 0 ou 1 pour chien ou chat
 		//cout << "Name of folders" << endl;
@@ -552,32 +574,25 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 		// ouvrir le directory ou concatener avec string f => doss_entr/chien_ou_chat
 		string open;
 		open = f + dirname;
-		cout << "Name of the folder : " << open << endl;
 		// un rand pour piocher aléatoirement dans le dossier et garder le nom du dossier à chaque
 		int alea = rand()%12499;
 		open = open + "/" + to_string(alea) + ".bmp";
-		cout << "Name of the file : " << open << endl;
 
 		// lecture du fichier
 		recupAnalyseDonneesBmp(open, &fileheader, &imageheader);
-		cout << "On a recup les bmp" << endl;
 		// conversion en struct image
 		img = convertBitmapToImage(imageheader);
-		cout << "On a recup l'image" << endl;
 		// conversion en vectorXd
 
-
-		cout << "Out with the old, " << endl;
 		VectorXd vec1;
 		vec1 = allPixelBitMap(img, nbneurones);
-		cout << "In with the new" << endl;
 
 		// remplir vector<vectorXd>
 		bmp.push_back(vec1);
 		// remplir vector<int> label
 		labels->push_back(choix);
-	//}
-	cout << "No bad alloc ?" << endl;
+	}
+	cout << "1000 done" << endl;
 	return bmp;
 }
 

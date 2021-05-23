@@ -69,29 +69,6 @@ MatrixXd aleaPoids(int nbNeuronesSuivants, int nbNeurones)
 	}
 	return mP;
 }
- 
-Image compression(Image i, int nbNeurones)
-{
-	Image img;
-	img.Width = i.Width;
-	img.Height = i.Height;
-	img.etiquette = i.etiquette;
-
-	double * temp = new double[i.Width * i.Height];
-	
-	while(img.Width*img.Height > nbNeurones)
-	{
-		img.Width--; img.Height--;
-		for(int m = 0; m < img.Height; m++)
-		{
-			for(int n = 0; n < img.Width; n++) 
-				temp[m*img.Width + n] = (i.pixel[m*img.Width + n] + i.pixel[(m+1)*img.Width] + i.pixel[m*img.Width + n+1] + i.pixel[(m+1)*img.Width + n+1])/4; 
-		}
-		i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
-	}
-	img.pixel = i.pixel;
-	return img;
-}
 
 /*void remplissage(MatrixXd *aRemplir)
 {

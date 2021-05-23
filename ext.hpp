@@ -25,9 +25,6 @@ struct Parametres
 
 struct Image;
 
-
-Image compression(Image i, int nbNeurones);
-
 std::string resToString(int resultatSimulation, int typeSim);
 Eigen::VectorXd aleaBiais(int nbNeurones);
 Eigen::MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants);

@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv)
 {
-	Parametres param;
+	/*Parametres param;
 	param.typeSim = 1;
 	param.nbCouches = 6;
 	param.nbNeuronesEntree = 28*28;
@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 	param.nbNeuronesSortie = 26;
 	param.tauxApprentissage = 30;
 
-	Reseau res(param);
+	Reseau res(param);*/
 
 	/*VectorXd entree; entree = aleaBiais(3);
 	cout << "Vecteur test : " << entree << endl;
@@ -43,38 +43,47 @@ int main(int argc, char **argv)
 	sauvegardeStat(res, "stat.txt");*/
 	
 	/*MNIST img;
-	img = recupDonneesFileMNIST("emnist-letters-train-images-idx3-ubyte", "emnist-letters-train-labels-idx1-ubyte");
+	//img = recupDonneesFileMNIST("emnist-letters-train-images-idx3-ubyte", "emnist-letters-train-labels-idx1-ubyte");
+	img = recupDonneesFileMNISTSimulation("emnist-letters-test-images-idx3-ubyte");
 	VectorXd MNISTAttendu = etiquetteMNIST(img, param.typeSim);
 	cout << "Vecteur Attendu : " << MNISTAttendu << endl;
 
 	VectorXd entree = allPixelMNIST(img);
 	bool verif = false;
-	while(!verif)
+	/*while(!verif)
 	{
 		verif = res.retropropagation(entree, MNISTAttendu);
 		cout << "Vecteur de sortie :\n" << res.vCouches[res.nbCouches-1].vActivation << endl;
-	}
+	}*/
 
-	int Reponse = res.simulation(entree);
+
+
+	/*int Reponse = res.simulation(entree);
 	std::cout << "Valeur de sortie : \n" <<  res.vCouches[res.nbCouches-1].vActivation << std::endl;
 	std::cout << "Le neurone de reponse est le : " << Reponse << std::endl;
 	char c = Reponse + 97;
 	std::cout << "La lettre de reponse est le : " << c << std::endl;*/
 
-	cout << "LA REPONSE EST : " << resToString(1, 0) << endl;
-	vector<int> labels;
-	allImage(&labels, "BMP/BMP", 28*28);
-
+	//cout << "LA REPONSE EST : " << resToString(19, 1) << endl;
+	//string a = resToString(19, 1);
+	//cout << " J'ai dit " << a << endl;
+	/*vector<int> labels;
+	vector<VectorXd> vec = allImage(&labels, "BMP", 28*28);
+	while(vec.size())
+	{
+		vec.pop_back();
+		labels.pop_back();
+	}*/
 	//return 0;
 
 
 
 	//AFFICHAGE TEST
 
-	/*QApplication app (argc, argv);
+	QApplication app (argc, argv);
 	MainWindow w;
 	w.show();
 
 
-	return app.exec();*/
+	return app.exec();
 }
