@@ -86,7 +86,7 @@ vector<MatrixXd> Reseau::getPoids()
 		poids.push_back(vCouches[i].mPoids);
 	}
 	return poids;
-};
+}
 
 //Méthodes du RNU
 int Reseau::max(VectorXd sorties) //permet d'avoir l'indice de la valeur max

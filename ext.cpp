@@ -19,7 +19,8 @@ VectorXd aleaBiais(int nbNeurones)
 	//std::uniform_real_distribution<double> unif(0, 1);
 	//std::default_random_engine re;
 	
-	for(int i = 0; i < nbNeurones; i++){
+	for(int i = 0; i < nbNeurones; i++)
+	{
 		vB(i) = unif(re);
 	}
 	return vB;
@@ -61,20 +62,13 @@ MatrixXd aleaPoids(int nbNeuronesSuivants, int nbNeurones)
 	std::default_random_engine re(rd());
 	//return distribution(generator);
 	
-	for(int i = 0; i < nbNeuronesSuivants; i++){
-		for(int j = 0; j < nbNeurones; j++){
+	for(int i = 0; i < nbNeuronesSuivants; i++)
+	{
+		for(int j = 0; j < nbNeurones; j++)
+		{
 			
 			mP(i,j) = unif(re);
 		}
 	}
 	return mP;
 }
-
-/*void remplissage(MatrixXd *aRemplir)
-{
-	int row = aRemplir->rows() + 1;
-	int col = aRemplir->cols() + 1;
-	MatrixXd remplie = MatrixXd::Zero(row, col);
-	remplie.block(0,0,row-1, col-1) = aRemplir->block(0,0,row-1, col-1);
-	*aRemplir = remplie;
-}*/

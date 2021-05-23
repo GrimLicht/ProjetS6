@@ -155,12 +155,12 @@ void MainWindow::sendToStructParam()
 			{
 			case QMessageBox::Save:
 				quandOnSaveR();
-				qDebug() << "la save c'est bien passer";
+				//qDebug() << "la save s'est bien passe";
 				break;
 			case QMessageBox::Ignore:
 				break;
 			case QMessageBox::Cancel:
-				qDebug() << "vous avez annuler";
+				//qDebug() << "vous avez annule";
 				ignore = false;
 			}
 		}
@@ -381,6 +381,7 @@ void MainWindow::quandOnCharge()
 		update();
 	}
 }
+
 Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, vector<VectorXd> *vBiais)
 {
 	Parametres p;
@@ -493,7 +494,7 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
 					c = data.read(1);
 				}
 				h(j, k) = param.toDouble(); //la case j k de la matrice n° i CA MARCHE PAS
-				qDebug() << h(j, k) << " j = " << j << " k = " << k;
+				//qDebug() << h(j, k) << " j = " << j << " k = " << k;
 				k++;
 
 				if ((i == 0) && (k == p.nbNeuronesCache)) //Dans le cas de la première matrice
@@ -550,7 +551,7 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
 				}
 
 				tamp[j] = param.toDouble();
-				qDebug() << tamp(j) << " j = " << j;
+				//qDebug() << tamp(j) << " j = " << j;
 				j++;
 			}
 			vBiais->push_back(tamp);
@@ -577,10 +578,12 @@ void MainWindow::afficherStructure()
 
 	if(p.nbCouches > 17)
 		p.nbCouches = 17; //on aura max 15 couches cachees
+
 	couche = couche/(double)(p.nbCouches-2);
 	
 	if(p.nbNeuronesEntree > 100)
-		p.nbNeuronesEntree /= 10; 
+		p.nbNeuronesEntree /= 10;
+
 	if((p.nbNeuronesEntree > 20) && (p.nbNeuronesEntree <= 100)) //si il y a plus de 20 neurones d'entree, on aura toujours entre 4 et 20 cercles pour les representer
 	{
 		compress = p.nbNeuronesEntree/25.0;
@@ -589,7 +592,8 @@ void MainWindow::afficherStructure()
 	entree = entree/(double)p.nbNeuronesEntree;
 
 	if(p.nbNeuronesCache > 100)
-		p.nbNeuronesCache /= 10; 
+		p.nbNeuronesCache /= 10;
+
 	if((p.nbNeuronesCache > 20) && (p.nbNeuronesCache <= 100)) //si il y a plus de 20 neurones par couche cachee, on aura toujours entre 4 et 20 cercles pour les representer
 	{
 		compress = p.nbNeuronesCache/25.0;
@@ -670,6 +674,7 @@ void MainWindow::afficherStructure()
 	pinceau.setBrush(Qt::blue);
 	pinceau.save();
 	auto plus = 405.0 / p.nbNeuronesCache;
+
 	for (double i = CM.y(); i < 515.0; i += plus)
 	{
 		for (double j = CM.x(); j < largeurM; j += 510.0 / (p.nbCouches - 2))
@@ -886,4 +891,5 @@ void MainWindow::quandOnSaveS()
 	//sauvegarder le reseaux
 	sauvegardeStat(*rUtilisation, cheminDacces.toStdString());
 }
+
 MainWindow::~MainWindow() {}

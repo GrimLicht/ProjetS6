@@ -35,7 +35,8 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 
 	ifstream monFichier(fImage);
 
-	if(monFichier.is_open()){
+	if(monFichier.is_open())
+	{
 		int magicNumber=0;
 		int numberOfImages=0;
 		int numberOfRows=0;
@@ -69,8 +70,10 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 		cout << "Nombre aléatoire: " << nbAlea << endl;
 
 		//Initialise le tableau de pixels à -1 
-		for(int r=0; r<numberOfRows; ++r){
-			for(int c=0; c<numberOfColumns; ++c){
+		for(int r=0; r<numberOfRows; ++r)
+		{
+			for(int c=0; c<numberOfColumns; ++c)
+			{
 				m.pixels[r][c]=-1;
 				//cout << "PIXEL[" << r << "][" << c <<"] : " << m.pixels[r][c] << endl;
 			}
@@ -89,24 +92,29 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 					int valPixel=(int)temp;
 					
 					//Si le nombre aléatoire et le numéro d'image coincide, alors on stocke la valeur du pixel entre 0 et 255 dans le tableau de pixel de la structure MNIST
-					if(i == nbAlea){
+					if(i == nbAlea)
+					{
 
 						m.pixels[r][c]=valPixel;
 
 						//Permet d'afficher correctement la matrice des pixels de l'image 
-						if(cpt%28==0){
+						if(cpt%28==0)
+						{
 							cout << "\n";
 						}
 
-						if(valPixel>=0 && valPixel<=9){
+						if(valPixel>=0 && valPixel<=9)
+						{
 							cout << valPixel << "	 ";
 						}
 
-						else if(valPixel >=10 && valPixel <=99){
+						else if(valPixel >=10 && valPixel <=99)
+						{
 							cout << valPixel << "	";
 						}
 
-						else if(valPixel >=100 && valPixel <= 999){
+						else if(valPixel >=100 && valPixel <= 999)
+						{
 							cout << valPixel << " ";
 						}
 
@@ -130,7 +138,8 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 
 	ifstream monFichier2(fLabel);
 
-	if(monFichier2.is_open()){
+	if(monFichier2.is_open())
+{
 
 		int magicNumber=0;
 		int numberOfItems=0;
@@ -146,21 +155,24 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 		cout << "Number of items: " << numberOfItems << endl;
 
 		//Lecture du label dans le fichier
-		for(int i=0; i<numberOfItems; ++i){
+		for(int i=0; i<numberOfItems; ++i)
+		{
 
 			char temp2 = 0;
 			monFichier2.read(&temp2, sizeof(temp2));
 			
 			//si le nombre alea et le numero de label i coincide alors on stocke dans l'étiquette de la structure MNIST
-			if(i==nbAlea){
+			if(i==nbAlea)
+			{
 				cout << "Valeur label: " << (int)temp2 << endl;	
-				 m.etiquette=(int)temp2;
+				m.etiquette=(int)temp2;
 			}	
 			
 		}
 	}
 
-	else{
+	else
+	{
 		cout << "Impossible d'ouvrir le fichier de label" << endl;
 	}
 
@@ -213,8 +225,10 @@ MNIST recupDonneesFileMNISTSimulation(string fImage)
 		cout << "Nombre aléatoire: " << nbAlea << endl;
 
 		//Initialise le tableau de pixels à -1
-		for(int r=0; r<numberOfRows; ++r){
-			for(int c=0; c<numberOfColumns; ++c){
+		for(int r=0; r<numberOfRows; ++r)
+		{
+			for(int c=0; c<numberOfColumns; ++c)
+			{
 				m.pixels[r][c]=-1;
 				//cout << "PIXEL[" << r << "][" << c <<"] : " << m.pixels[r][c] << endl;
 			}
@@ -233,24 +247,29 @@ MNIST recupDonneesFileMNISTSimulation(string fImage)
 					int valPixel=(int)temp;
 					
 					//Si le nombre aléatoire et le numéro d'image coincide, alors on stocke la valeur du pixel entre 0 et 255 dans le tableau de pixel de la structure MNIST
-					if(i == nbAlea){
+					if(i == nbAlea)
+					{
 
 						m.pixels[r][c]=valPixel;
 
 						//Permet d'afficher correctement la matrice des pixels de l'image
-						if(cpt%28==0){
+						if(cpt%28==0)
+						{
 							cout << "\n";
 						}
 
-						if(valPixel>=0 && valPixel<=9){
+						if(valPixel>=0 && valPixel<=9)
+						{
 							cout << valPixel << "	 ";
 						}
 
-						else if(valPixel >=10 && valPixel <=99){
+						else if(valPixel >=10 && valPixel <=99)
+						{
 							cout << valPixel << "	";
 						}
 
-						else if(valPixel >=100 && valPixel <= 999){
+						else if(valPixel >=100 && valPixel <= 999)
+						{
 							cout << valPixel << " ";
 						}
 
@@ -264,7 +283,8 @@ MNIST recupDonneesFileMNISTSimulation(string fImage)
 
 	}
 
-	else{
+	else
+	{
 		cout << "Impossible d'ouvrir le fichier d'image" << endl;
 	}
 
