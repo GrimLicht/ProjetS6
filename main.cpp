@@ -56,7 +56,9 @@ int main(int argc, char **argv)
 		cout << "Vecteur de sortie :\n" << res.vCouches[res.nbCouches-1].vActivation << endl;
 	}*/
 
-	BitMapFileHeader header;
+
+	//TESTS POUR LES FONCTIONS BITMAPS & LEAKS
+	/*BitMapFileHeader header;
 	BitMapImageHeader image;
 	cout << "Let's get this bitmap file" << endl;
 	recupAnalyseDonneesBmp("ACNH.bmp", &header, &image);
@@ -68,20 +70,22 @@ int main(int argc, char **argv)
 
 	int Reponse = res.simulation(entree);
 	std::cout << "Valeur de sortie : \n" <<  res.vCouches[res.nbCouches-1].vActivation << std::endl;
-	std::cout << "Le neurone de reponse est le : " << Reponse << std::endl;
+	std::cout << "Le neurone de reponse est le : " << Reponse << std::endl;*/
+
+
 	//char c = Reponse + 97;
 	//std::cout << "La lettre de reponse est le : " << c << std::endl;
 
 	//cout << "LA REPONSE EST : " << resToString(19, 1) << endl;
 	//string a = resToString(19, 1);
 	//cout << " J'ai dit " << a << endl;
-	/*vector<int> labels;
+	vector<int> labels;
 	vector<VectorXd> vec = allImage(&labels, "BMP", 28*28);
 	while(vec.size())
 	{
 		vec.pop_back();
 		labels.pop_back();
-	}*/
+	}
 
 	//On supprime les couches
 	while(res.vCouches.size())
@@ -92,7 +96,7 @@ int main(int argc, char **argv)
 	//On supprime les stats
 	res.stats.clear();
 
-	//Libere BitMapFileHeader
+	/*//Libere BitMapFileHeader
 	delete[](header.type);
 	delete[](header.reserved);
 	//Libere BitMapImageHeader
@@ -100,7 +104,7 @@ int main(int argc, char **argv)
 	delete[](image.G);
 	delete[](image.B);
 	//Libere struct Image
-	delete[](img.pixel);
+	delete[](img.pixel);*/
 
 	return 0;
 

@@ -609,10 +609,8 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 	BitMapImageHeader imageheader;
 	Image img;
 
-	//uniform_real_distribution<int> unif{0, 12499};
-	//default_random_engine re;
 	srand(time(0));
-//	cout << "Bad alloc ?" << endl;
+	
 	// pour bmpp
 	// rand pour aller dans les deux dossiers aléatoirement
 	string dirname;
@@ -654,6 +652,15 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 		bmp.push_back(vec1);
 		// remplir vector<int> label
 		labels->push_back(choix);
+		//Libere BitMapFileHeader
+		delete[](fileheader.type);
+		delete[](fileheader.reserved);
+		//Libere BitMapImageHeader
+		delete[](imageheader.R);
+		delete[](imageheader.G);
+		delete[](imageheader.B);
+		//Libere struct Image
+		delete[](img.pixel);
 	}
 	cout << "1000 done" << endl;
 	return bmp;
