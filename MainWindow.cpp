@@ -28,7 +28,6 @@
 
 MainWindow::MainWindow()
 {
- 
 	setWindowTitle("Application Reseau de Neurone"); //nommer la fenetre principal
 	resize(1920, 1080);
 	//initalisation de param qui est vide lors du lancement de l'app
@@ -710,6 +709,7 @@ void MainWindow::quandOnSim()
 {
 	/*1*/
 	//select le fichier a utiliser
+	qDebug() << "LE NMB DE NEURONES C'EST " << p.nbNeuronesEntree;
 	if (p.nbCouches != 0)
 	{
 		QMessageBox(QMessageBox::Information, "Information", "Vous vous appretez à effectuer une simulation. Pour un réseau de neurones MNIST vous devez selectionner le fichier test dans le dossier MNIST Letter ou MNIST Chiffre dans le dossier MNIST.  Pour un réseau de neurones chien/chat, selectionnez un ficher dans l'un des 2 dossiers chien ou chat contenu dans le dossier BMP ", QMessageBox::Ok, this).exec();
@@ -725,11 +725,15 @@ void MainWindow::quandOnSim()
 			{
 				BitMapFileHeader header;
 				BitMapImageHeader image;
+				qDebug() << "Avant recup fichier";;
 				recupAnalyseDonneesBmp(cheminDacces.toStdString(), &header, &image);
+				qDebug() << "On a recup le fichier, on va le convertir en struct image";
 				Image img = convertBitmapToImage(image);
+				qDebug() << "On a l'image on va recup les pixels";
 				/*4*/
 				//transforme image en vecteur
 				all = allPixelBitMap(img, p.nbNeuronesEntree);
+				qDebug() << "L'erreur c'est pas allPixels " << all.size() << " " << p.nbNeuronesEntree;
 			}
 			//-------------------------------------------------------------------
 
@@ -745,7 +749,9 @@ void MainWindow::quandOnSim()
 
 			/*5*/
 			//lance la simulation
+			qDebug() << "On va commencer la simulation";
 			int reponse = rUtilisation->simulation(all);
+			qDebug() << "On a fini la simulation";
 			/*6*/
 			//recup la reponse dans la map
 			string s = resToString(reponse, p.typeSim);
@@ -800,7 +806,6 @@ void MainWindow::quandOnSaveR()
 
 void MainWindow::afficheRN(Parametres param, vector<MatrixXd> *mPoids)
 {
-
 	QMainWindow *fenetreRN = new QMainWindow();
 	fenetreRN->resize(1800, 1080);
 	fenetreRN->setWindowTitle("Tableau des poids du réseau neuronal");
@@ -870,6 +875,7 @@ void MainWindow::afficheRN(Parametres param, vector<MatrixXd> *mPoids)
 	}
 	fenetreRN->show();
 }
+
 void MainWindow::quandOnSaveS()
 
 {

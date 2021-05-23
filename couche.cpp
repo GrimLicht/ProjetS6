@@ -25,7 +25,10 @@ Couche::Couche(int nbNeurones, VectorXd vBiais)
 	this->error = new double[nbNeurones];
 }
 
-Couche::~Couche(){} //A enlever
+Couche::~Couche()
+{
+	//delete[](error);
+}
 
 //Setters/Getters
 unsigned int Couche::getNbNeurones()

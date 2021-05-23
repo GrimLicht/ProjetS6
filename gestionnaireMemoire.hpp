@@ -19,7 +19,6 @@ struct BitMapFileHeader
 	char* reserved;
 	int offset;
 };
-typedef struct BitMapFileHeader BitmapFileHeader;
 
 //Structure BitmapImageHeader
 struct BitMapImageHeader
@@ -40,7 +39,6 @@ struct BitMapImageHeader
 	unsigned int* B;
 	int etiquette;
 };
-typedef struct BitMapImageHeader BitmapImageHeader;
 
 //Structure Image
 struct Image
@@ -50,16 +48,15 @@ struct Image
 	double* pixel;
 	int etiquette;
 };
-typedef struct Image Image;
 
-//Structure Mnist
-struct Mnist {
+//Structure MNIST
+struct MNIST 
+{
 	unsigned long Width ;
 	unsigned long Height ; 
 	double pixels[28][28];
 	int etiquette ;
 };
-typedef struct Mnist MNIST;
 
 //Méthodes du gestionnaire de mémoire
 int reverseInt(int i);
@@ -69,8 +66,8 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(Image i, int nbNeurones);
 VectorXd allPixelBitMap(Image i, int nbNeurones);
-VectorXd etiquetteMNIST(Mnist m, int typeSimu);
-VectorXd allPixelMNIST(Mnist m);
+VectorXd etiquetteMNIST(MNIST m, int typeSimu);
+VectorXd allPixelMNIST(MNIST m);
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones);
 void sauvegardeRN(Reseau r, string chemin);
 void sauvegardeStat(Reseau r, string chemin);

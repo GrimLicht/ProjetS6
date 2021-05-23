@@ -271,7 +271,7 @@ MNIST recupDonneesFileMNISTSimulation(string fImage)
 	return m;
 }
 
-VectorXd etiquetteMNIST(Mnist m, int typeSimu)
+VectorXd etiquetteMNIST(MNIST m, int typeSimu)
 {
 	int nbReponses;
 	if(typeSimu == 1) nbReponses = 26;
@@ -318,7 +318,7 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		// lecture de la partie reserved 
 		char* tmp = new char[4];
 		is.read(tmp, 4);
-		header->reserved=tmp;
+		header->reserved = tmp;
 
 		// lecture de l'adresse de début des pixels ( offset) 
 		int offset;
@@ -450,13 +450,10 @@ Image convertBitmapToImage(BitMapImageHeader b)
 			image.pixel[i]=rgb_encoding;
 			//cout << "RGB PIXEL: " << image.pixel[i] << endl;
 	}
-	delete(b.R);
-	delete(b.G);
-	delete(b.B);
 	return image;
 }
 
-VectorXd allPixelMNIST(Mnist m) 
+VectorXd allPixelMNIST(MNIST m) 
 {
 	VectorXd pixels(784);
 
@@ -490,6 +487,47 @@ vector<VectorXd> allMNIST(string fImage, string fLabel, vector<int> *labels)
 	return set;
 }
 
+/*Image compression(Image i, int nbNeurones)
+{
+	Image img;
+	img.etiquette = i.etiquette;
+
+	double *temp = new double[i.Width * i.Height];
+
+	for(int hei = 0; hei < i.Height; hei++)
+	{
+		for(int len = 0; len < i.Width; len++)
+		{
+			temp[hei*img.Width + len] = i.pixel[hei*img.Width + len];
+		}
+	}
+	//temp = i.pixel;
+	delete[](i.pixel);
+	while(i.Width*i.Height > nbNeurones)
+	{
+		cout << "Ancienne taille : " << i.Width * i.Height << "Nouvelle taille : " << nbNeurones << endl;
+		i.Width--; i.Height--;
+		for(int m = 0; m < img.Height; m++)
+		{
+			for(int n = 0; n < img.Width; n++)
+				temp[m*img.Width + n] = (temp[m*img.Width + n] + temp[(m+1)*img.Width] + temp[m*img.Width + n+1] + temp[(m+1)*img.Width + n+1])/4; 
+		}
+		//i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
+	}
+	img.Width = i.Width;
+	img.Height = i.Height;
+	cout << "Taille malloc" << img.Height * img.Width << endl;
+	img.pixel = new double[img.Width * img.Height];
+	for(int hei = 0; hei < i.Height; hei++)
+	{
+		for(int len = 0; len < i.Width; len++)
+		{
+			img.pixel[hei*img.Width + len] = temp[hei*img.Width + len];
+		}
+	}
+	delete[](i.pixel);
+	return img;
+}*/
 Image compression(Image i, int nbNeurones)
 {
 	Image img;
@@ -498,18 +536,36 @@ Image compression(Image i, int nbNeurones)
 	img.etiquette = i.etiquette;
 
 	double * temp = new double[i.Width * i.Height];
-	
+	for(int hei = 0; hei < i.Height; hei++)
+	{
+		for(int len = 0; len < i.Width; len++)
+		{
+			temp[hei*img.Width + len] = i.pixel[hei*img.Width + len];
+		}
+	}
+	//temp = i.pixel;
+	i.pixel = nullptr;
+	//delete[](i.pixel);
 	while(img.Width*img.Height > nbNeurones)
 	{
 		img.Width--; img.Height--;
 		for(int m = 0; m < img.Height; m++)
 		{
 			for(int n = 0; n < img.Width; n++) 
-				temp[m*img.Width + n] = (i.pixel[m*img.Width + n] + i.pixel[(m+1)*img.Width] + i.pixel[m*img.Width + n+1] + i.pixel[(m+1)*img.Width + n+1])/4; 
+				temp[m*img.Width + n] = (temp[m*img.Width + n] + temp[(m+1)*img.Width] + temp[m*img.Width + n+1] + temp[(m+1)*img.Width + n+1])/4; 
 		}
-		i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
+		//i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
 	}
-	img.pixel = i.pixel;
+
+	img.pixel = new double[i.Width * i.Height];
+	for(int hei = 0; hei < i.Height; hei++)
+	{
+		for(int len = 0; len < i.Width; len++)
+		{
+			img.pixel[hei*img.Width + len] = temp[hei*img.Width + len];
+		}
+	}
+	delete[](temp);
 	return img;
 }
 
@@ -520,15 +576,22 @@ VectorXd allPixelBitMap(Image i, int nbNeurones)
 
 	//Passage d'un double** à un vecteur
 	VectorXd v(nbNeurones);
+	//cout << "i.pixel : " << i.pixel[0] << endl;
+	//cout << "Taille :" << endl;
+	//cout << "	Nb Neurones: " << nbNeurones << endl;
+	//cout << "	Height & Width : "<< i.Height << " " << i.Width << endl;
 	int cp = 0;
 	for(int a = 0; a < (int)i.Height; a++)
 	{
+		//cout << "A : " << a << endl;
 		for(int b = 0; b < (int)i.Width; b++)
 		{
+			//cout << "	B : " << b << endl;
 			v[cp] = i.pixel[a * i.Width + b];
 			cp++;
 		}
 	}
+	delete[](i.pixel);
 
 	//Remplissage si besoin
 	while(cp < nbNeurones)

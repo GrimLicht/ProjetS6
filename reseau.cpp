@@ -59,7 +59,17 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 }
 
 //Destructeur
-Reseau::~Reseau() {}
+Reseau::~Reseau() 
+{
+	while(vCouches.size())
+	{
+		vCouches.pop_back();
+	}
+	while(stats.size())
+	{
+		stats.pop_back();
+	}
+}
 
 //Getteurs
 unsigned int Reseau::getNbCouches() { return nbCouches; };
@@ -83,7 +93,7 @@ int Reseau::max(VectorXd sorties) //permet d'avoir l'indice de la valeur max
 {
 	double max = 0;
 	int indice = -1;
-	for (int i = 0; i < (sorties.size()); i++)
+	for (int i = 0; i < sorties.size(); i++)
 	{
 		if (max < sorties[i])
 		{
@@ -138,7 +148,8 @@ VectorXd fast_sigmoide(VectorXd entree)
 		diviseur += 1;
 		//cout << diviseur << " = ";
 		sortie[i] = 1 / diviseur;
-		if (isnan(sortie[i]))
+		bool nan = isnan(sortie[i]);
+		if (nan)
 		{
 			//cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
 			sortie[i] = 0;

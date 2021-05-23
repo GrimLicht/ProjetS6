@@ -23,7 +23,6 @@ class Reseau
 	unsigned int typeSim;
 	double tauxApprentissage;
 
-
 	public:
 	//Constructeurs/Destructeur
 	Reseau(Parametres p);
@@ -54,7 +53,6 @@ class Reseau
 	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);
 	VectorXd retourLabel(int label);
 	vector<VectorXd> allLabels(vector<int> labels);
-
 };
 
 #endif /* Reseau_hpp */
