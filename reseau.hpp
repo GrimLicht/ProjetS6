@@ -52,7 +52,6 @@ class Reseau
 	bool retropropagation(VectorXd entree, VectorXd resultatattendu);
 	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);
 	VectorXd retourLabel(int label);
-	vector<VectorXd> allLabels(vector<int> labels);
 };
 
 #endif /* Reseau_hpp */

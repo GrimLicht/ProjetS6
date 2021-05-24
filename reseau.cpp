@@ -147,7 +147,7 @@ VectorXd fast_sigmoide(VectorXd entree)
 		//cout << diviseur << " = ";
 		sortie[i] = 1 / diviseur;
 		bool nan = isnan(sortie[i]);
-		if (nan)
+		if (nan || (sortie[i]<0))
 		{
 			//cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
 			sortie[i] = 0;
@@ -243,9 +243,7 @@ void Reseau::calculDelta(VectorXd resultatAttendu)
 			// dE/dyⱼ = Σ ∂E/∂zⱼ * ∂z/∂yⱼ = Σ ∂E/∂zⱼ * wᵢⱼ
 			double errorHidden = 0; //errorHidden = 0
 			for(int o = 0; o < vCouches[couche+1].nbNeurones; o++) //for o in range(len(self.output_layer.neurons)):
-			{
 				errorHidden += vCouches[nbCouches-1].error[o] * vCouches[couche].mPoids(o, h); //errorHidden += tabError[o] * self.output_layer.neurons[o].weights[h]
-			}
 
 			// ∂E/∂zⱼ = dE/dyⱼ * ∂zⱼ/∂
 			vCouches[couche].error[h] = errorHidden * deriveeSigmoide(vCouches[couche].vActivation[h]);//tabErrorHidden[h] = errorHidden * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_input()
@@ -314,28 +312,31 @@ bool Reseau::retropropagation(VectorXd entree, VectorXd resultatAttendu)
 
 VectorXd Reseau::retourLabel(int label)
 {
+
+	cout << "Simu : " << typeSim << " | repAttendue : " << label << endl;
 	// récupération du resultat attendu
-	VectorXd repAttendues;
-	if (typeSim == 1) // bmp chien chat
-		repAttendues.Zero(2);
+	if (typeSim == 0) // bmp chien chat
+	{
+		VectorXd repAttendues(2);
+		repAttendues[label] = 1;
+		cout << "On a remplis repAttendue" << endl;
+		return repAttendues;
+	}
+	else if(typeSim == 1) //lettres
+	{
+		VectorXd repAttendues(26);
+		repAttendues[label] = 1;
+		cout << "On a remplis repAttendue" << endl;
+		return repAttendues;
+	}
 	else if(typeSim == 2) //chiffres
-		repAttendues.Zero(10);
-	else if(typeSim == 3) //lettres
-		repAttendues.Zero(26);
-	
-	repAttendues[label] = 1;
-	return repAttendues;
-}
-
-vector<VectorXd> Reseau::allLabels(vector<int> labels)
-{
-  vector<VectorXd> vReponses;
-  for(int i = 0; i < labels.size(); i++)
-  {
-	vReponses[i] = retourLabel(labels[i]);
-  }
-
-  return vReponses;
+	{
+		VectorXd repAttendues(10);
+		repAttendues[label] = 1;
+		cout << "On a remplis repAttendue" << endl;
+		return repAttendues;
+	}
+	else(exit(45));
 }
 
 void Reseau::entrainement(vector<VectorXd> setFichiers, vector<int> labels)

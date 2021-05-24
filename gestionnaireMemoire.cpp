@@ -29,7 +29,6 @@ vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int>
 {
 	vector<VectorXd> all;
 	VectorXd pixel(28*28);
-
 	//int nbAlea;
 	int cpt=0;
 
@@ -129,19 +128,19 @@ VectorXd recupDonneesFileMNISTSimulation(string fImage)
 
 		//Lecture du nombre d'images dans le fichier
 		monFichier.read((char*)&numberOfImages, sizeof(numberOfImages));
-		numberOfImages=reverseInt(numberOfImages);
+		numberOfImages = reverseInt(numberOfImages);
 
 		//Lecture du nombre de rang dans le fichier
 		monFichier.read((char*)&numberOfRows, sizeof(numberOfRows));
-		numberOfRows=reverseInt(numberOfRows);
+		numberOfRows = reverseInt(numberOfRows);
 
 		//Lecture du nombre de colonnes dans le fichier
 		monFichier.read((char*)&numberOfColumns, sizeof(numberOfColumns));
-		numberOfColumns=reverseInt(numberOfColumns);
+		numberOfColumns = reverseInt(numberOfColumns);
 
 		//Donne un nombre aléatoire parmi le nombre total d'images dans le fichier afin de piocher aléatoirement une image dans le fichier
 		srand(time(NULL));
-		nbAlea=rand()%(numberOfImages+1);
+		nbAlea = rand()%(numberOfImages+1);
 
 		//Lecture de la valeur du pixel dans le fichier
 		for(int i=0; i<numberOfImages; ++i)
@@ -490,17 +489,20 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 /*Permet de sauvegarder les statistiques de reussite du RN*/
 void sauvegardeStat(Reseau r, string chemin)
 {
-	ofstream txt(chemin, ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
+    ofstream txt(chemin, ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
 
-	if (txt)
-	{
-		vector<unsigned int> vecStats = r.getStats();
-		for (int i = 0; i < vecStats.size(); i++)
-			txt << vecStats[i] << endl;
-
-		txt.close();
-	}
-	else cout << "Erreur lors de l'ouverture du fichier\n";
+    if (txt)
+    {
+        vector<unsigned int> vecStats = r.getStats();
+        for (int i = 0; i < vecStats.size(); i++)
+        {
+            txt << vecStats[i];
+            if(i < vecStats.size()-1) txt << endl;
+        }
+        txt.close();
+    }
+    else
+        cout << "Erreur lors de l'ouverture du fichier\n";
 }
 
 void sauvegardeRN(Reseau r, string chemin)
