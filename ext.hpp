@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
+#include <cmath>
 #include <ctime>
 
 //Structure Parametres
@@ -25,7 +26,7 @@ struct Parametres
 
 struct Image;
 
-std::string resToString(int resultatSimulation, int typeSim);
+std::string toString(int resultatSimulation, int typeSim);
 Eigen::VectorXd aleaBiais(int nbNeurones);
 Eigen::MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants);
 

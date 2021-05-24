@@ -25,10 +25,12 @@ int reverseInt(int i)
 
 
 /* Permet de récupérer les données du fichier MNIST et les stocker dans la struct MNIST */
-MNIST recupDonneesFileMNIST(string fImage, string fLabel)
+vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int> *labels)
 {
-	MNIST m;
-	int nbAlea;
+	vector<VectorXd> all;
+	VectorXd pixel(28*28);
+
+	//int nbAlea;
 	int cpt=0;
 
 	/* Ouverture et lecture du fichier Image */
@@ -37,51 +39,27 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 
 	if(monFichier.is_open())
 	{
-		int magicNumber=0;
-		int numberOfImages=0;
-		int numberOfRows=0;
-		int numberOfColumns=0;
+		int magicNumber=0; int numberOfImages=0; int numberOfRows=0; int numberOfColumns=0;
 
 		//Lecture du magic number dans le fichier
 		monFichier.read((char*)&magicNumber, sizeof(magicNumber));
-		magicNumber=reverseInt(magicNumber);
-		cout << "Magic Number: " << magicNumber << endl;
 
 		//Lecture du nombre d'images dans le fichier
 		monFichier.read((char*)&numberOfImages, sizeof(numberOfImages));
 		numberOfImages=reverseInt(numberOfImages);
-		cout << "Number of images: " << numberOfImages << endl;
 
 		//Lecture du nombre de rang dans le fichier
 		monFichier.read((char*)&numberOfRows, sizeof(numberOfRows));
 		numberOfRows=reverseInt(numberOfRows);
-		cout << "Number of rows: " << numberOfRows << endl;
-		m.Width=numberOfRows;
 
 		//Lecture du nombre de colonnes dans le fichier
 		monFichier.read((char*)&numberOfColumns, sizeof(numberOfColumns));
 		numberOfColumns=reverseInt(numberOfColumns);
-		cout << "Number of columns: " << numberOfColumns << endl;
-		m.Height=numberOfColumns;
-
-		//Donne un nombre aléatoire parmi le nombre total d'images dans le fichier afin de piocher aléatoirement une image dans le fichier
-		srand(time(NULL));
-		nbAlea=rand()%(numberOfImages+1);
-		cout << "Nombre aléatoire: " << nbAlea << endl;
-
-		//Initialise le tableau de pixels à -1 
-		for(int r=0; r<numberOfRows; ++r)
-		{
-			for(int c=0; c<numberOfColumns; ++c)
-			{
-				m.pixels[r][c]=-1;
-				//cout << "PIXEL[" << r << "][" << c <<"] : " << m.pixels[r][c] << endl;
-			}
-		}
 
 		//Lecture de la valeur du pixel dans le fichier
 		for(int i=0; i<numberOfImages; ++i)
 		{
+			//cout << "Image n. " << i << endl;
 			for(int r=0; r<numberOfRows; ++r)
 			{
 				for(int c=0; c<numberOfColumns; ++c)
@@ -90,99 +68,51 @@ MNIST recupDonneesFileMNIST(string fImage, string fLabel)
 					unsigned char temp = 0;
 					monFichier.read((char*)&temp, sizeof(temp));
 					int valPixel=(int)temp;
-					
-					//Si le nombre aléatoire et le numéro d'image coincide, alors on stocke la valeur du pixel entre 0 et 255 dans le tableau de pixel de la structure MNIST
-					if(i == nbAlea)
-					{
 
-						m.pixels[r][c]=valPixel;
+					pixel[r*28 + c] = valPixel / 255.0;
+					if (isnan(pixel[r*28 + c]))
+						pixel[i] = 0;
 
-						//Permet d'afficher correctement la matrice des pixels de l'image 
-						if(cpt%28==0)
-						{
-							cout << "\n";
-						}
-
-						if(valPixel>=0 && valPixel<=9)
-						{
-							cout << valPixel << "	 ";
-						}
-
-						else if(valPixel >=10 && valPixel <=99)
-						{
-							cout << valPixel << "	";
-						}
-
-						else if(valPixel >=100 && valPixel <= 999)
-						{
-							cout << valPixel << " ";
-						}
-
-						cpt++;
-
-					}
+					cpt++;
 				}
 			}
-			
+			all.push_back(pixel);
 		}
-
 	}
-
-	else
-	{
-		cout << "Impossible d'ouvrir le fichier d'image" << endl;
-	}
+	else cout << "Impossible d'ouvrir le fichier d'image" << endl;
 
 
 	/* Ouverture et lecture du fichier Label */
-
 	ifstream monFichier2(fLabel);
-
 	if(monFichier2.is_open())
-{
-
-		int magicNumber=0;
-		int numberOfItems=0;
+	{
+		int magicNumber=0; int numberOfItems=0;
 
 		//Lecture du nombre magic dans le fichier
 		monFichier2.read((char*)&magicNumber, sizeof(magicNumber));
-		magicNumber=reverseInt(magicNumber);
-		cout << "\nMagic Number: " << magicNumber << endl;
 
 		//Lecture du nombre d'items dans le fichier
 		monFichier2.read((char*)&numberOfItems, sizeof(numberOfItems));
 		numberOfItems=reverseInt(numberOfItems);
-		cout << "Number of items: " << numberOfItems << endl;
 
 		//Lecture du label dans le fichier
 		for(int i=0; i<numberOfItems; ++i)
 		{
-
 			char temp2 = 0;
 			monFichier2.read(&temp2, sizeof(temp2));
-			
-			//si le nombre alea et le numero de label i coincide alors on stocke dans l'étiquette de la structure MNIST
-			if(i==nbAlea)
-			{
-				cout << "Valeur label: " << (int)temp2 << endl;	
-				m.etiquette=(int)temp2;
-			}	
-			
+			labels->push_back((int)temp2);
 		}
 	}
 
-	else
-	{
-		cout << "Impossible d'ouvrir le fichier de label" << endl;
-	}
+	else cout << "Impossible d'ouvrir le fichier de label" << endl;
 
-	return m;
+	return all;
 }
 
 /* Permet de récupérer les données */
-MNIST recupDonneesFileMNISTSimulation(string fImage)
+VectorXd recupDonneesFileMNISTSimulation(string fImage)
 {
-	MNIST m;
+	VectorXd sortie(28*28);
 	int nbAlea;
 	int cpt=0;
 
@@ -192,121 +122,67 @@ MNIST recupDonneesFileMNISTSimulation(string fImage)
 
 	if(monFichier.is_open())
 	{
-		int magicNumber=0;
-		int numberOfImages=0;
-		int numberOfRows=0;
-		int numberOfColumns=0;
+		int magicNumber=0; int numberOfImages=0; int numberOfRows=0; int numberOfColumns=0;
 
 		//Lecture du magic number dans le fichier
 		monFichier.read((char*)&magicNumber, sizeof(magicNumber));
-		magicNumber=reverseInt(magicNumber);
-		cout << "Magic Number: " << magicNumber << endl;
 
 		//Lecture du nombre d'images dans le fichier
 		monFichier.read((char*)&numberOfImages, sizeof(numberOfImages));
 		numberOfImages=reverseInt(numberOfImages);
-		cout << "Number of images: " << numberOfImages << endl;
 
 		//Lecture du nombre de rang dans le fichier
 		monFichier.read((char*)&numberOfRows, sizeof(numberOfRows));
 		numberOfRows=reverseInt(numberOfRows);
-		cout << "Number of rows: " << numberOfRows << endl;
-		m.Width=numberOfRows;
 
 		//Lecture du nombre de colonnes dans le fichier
 		monFichier.read((char*)&numberOfColumns, sizeof(numberOfColumns));
 		numberOfColumns=reverseInt(numberOfColumns);
-		cout << "Number of columns: " << numberOfColumns << endl;
-		m.Height=numberOfColumns;
 
 		//Donne un nombre aléatoire parmi le nombre total d'images dans le fichier afin de piocher aléatoirement une image dans le fichier
 		srand(time(NULL));
 		nbAlea=rand()%(numberOfImages+1);
-		cout << "Nombre aléatoire: " << nbAlea << endl;
-
-		//Initialise le tableau de pixels à -1
-		for(int r=0; r<numberOfRows; ++r)
-		{
-			for(int c=0; c<numberOfColumns; ++c)
-			{
-				m.pixels[r][c]=-1;
-				//cout << "PIXEL[" << r << "][" << c <<"] : " << m.pixels[r][c] << endl;
-			}
-		}
 
 		//Lecture de la valeur du pixel dans le fichier
 		for(int i=0; i<numberOfImages; ++i)
 		{
-			for(int r=0; r<numberOfRows; ++r)
+			if(i == nbAlea)
 			{
-				for(int c=0; c<numberOfColumns; ++c)
+				for(int r=0; r<numberOfRows; ++r)
 				{
-					//Lecture du pixel
-					unsigned char temp = 0;
-					monFichier.read((char*)&temp, sizeof(temp));
-					int valPixel=(int)temp;
-					
-					//Si le nombre aléatoire et le numéro d'image coincide, alors on stocke la valeur du pixel entre 0 et 255 dans le tableau de pixel de la structure MNIST
-					if(i == nbAlea)
+					for(int c=0; c<numberOfColumns; ++c)
 					{
+						//Lecture du pixel
+						unsigned char temp = 0;
+						monFichier.read((char*)&temp, sizeof(temp));
+						int valPixel=(int)temp;
+						
+						//Si le nombre aléatoire et le numéro d'image coincide, alors on stocke la valeur du pixel entre 0 et 255 dans le tableau de pixel de la structure MNIST
 
-						m.pixels[r][c]=valPixel;
+							sortie[r*28 + c] = valPixel / 255.0;
 
-						//Permet d'afficher correctement la matrice des pixels de l'image
-						if(cpt%28==0)
-						{
-							cout << "\n";
-						}
+							//Permet d'afficher correctement la matrice des pixels de l'image
+							if(cpt%28==0)
+								cout << "\n";
+							if(valPixel>=0 && valPixel<=9)
+								cout << valPixel << "	 ";
+							else if(valPixel >=10 && valPixel <=99)
+								cout << valPixel << "	";
+							else if(valPixel >=100 && valPixel <= 999)
+								cout << valPixel << " ";
 
-						if(valPixel>=0 && valPixel<=9)
-						{
-							cout << valPixel << "	 ";
-						}
-
-						else if(valPixel >=10 && valPixel <=99)
-						{
-							cout << valPixel << "	";
-						}
-
-						else if(valPixel >=100 && valPixel <= 999)
-						{
-							cout << valPixel << " ";
-						}
-
-						cpt++;
-
+							cpt++;
+						
 					}
 				}
+				return sortie;
 			}
-			
 		}
-
 	}
 
-	else
-	{
-		cout << "Impossible d'ouvrir le fichier d'image" << endl;
-	}
+	else cout << "Impossible d'ouvrir le fichier d'image" << endl;
 
-	return m;
-}
-
-VectorXd etiquetteMNIST(MNIST m, int typeSimu)
-{
-	int nbReponses;
-	if(typeSimu == 1) nbReponses = 26;
-	else if(typeSimu == 2) nbReponses =10;
-	else 
-	{ 
-		cout << "Echec woula t'a demander une simu qui existe pas";
-		exit(1);
-	}
-
-	VectorXd resAttendu(nbReponses);
-	resAttendu.Zero(nbReponses);
-	resAttendu[m.etiquette] = 1;
-
-	return resAttendu;
+	return sortie;
 }
 
 /* Permet de récupérer les données du fichier BMP et les stocker dans les struct BMPFileHeader et BMPImageHeader */
@@ -473,81 +349,6 @@ Image convertBitmapToImage(BitMapImageHeader b)
 	return image;
 }
 
-VectorXd allPixelMNIST(MNIST m) 
-{
-	VectorXd pixels(784);
-
-	for (int i = 0; i < 28; i++) 
-	{
-		for(int j = 0; j < 28; j++)
-		{
-			pixels[i] = m.pixels[i][j] / 255.0;
-			if (isnan(pixels[i]))
-			{
-				//cout << "IT IS A NAN WATCH OUUUUT WATCH PITG" << endl;
-				pixels[i] = 0;
-			}
-		}
-	}
-
-	return pixels;
-}
-
-vector<VectorXd> allMNIST(string fImage, string fLabel, vector<int> *labels)
-{
-	vector<VectorXd> set(100);
-	for(int i = 0; i < 100; i++)
-	{
-		MNIST m = recupDonneesFileMNIST(fImage, fLabel);
-		VectorXd v(784);
-		v = allPixelMNIST(m);
-		set.push_back(v);
-		labels->push_back(m.etiquette);
-	}
-	return set;
-}
-
-/*Image compression(Image i, int nbNeurones)
-{
-	Image img;
-	img.etiquette = i.etiquette;
-
-	double *temp = new double[i.Width * i.Height];
-
-	for(int hei = 0; hei < i.Height; hei++)
-	{
-		for(int len = 0; len < i.Width; len++)
-		{
-			temp[hei*img.Width + len] = i.pixel[hei*img.Width + len];
-		}
-	}
-	//temp = i.pixel;
-	delete[](i.pixel);
-	while(i.Width*i.Height > nbNeurones)
-	{
-		cout << "Ancienne taille : " << i.Width * i.Height << "Nouvelle taille : " << nbNeurones << endl;
-		i.Width--; i.Height--;
-		for(int m = 0; m < img.Height; m++)
-		{
-			for(int n = 0; n < img.Width; n++)
-				temp[m*img.Width + n] = (temp[m*img.Width + n] + temp[(m+1)*img.Width] + temp[m*img.Width + n+1] + temp[(m+1)*img.Width + n+1])/4; 
-		}
-		//i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
-	}
-	img.Width = i.Width;
-	img.Height = i.Height;
-	cout << "Taille malloc" << img.Height * img.Width << endl;
-	img.pixel = new double[img.Width * img.Height];
-	for(int hei = 0; hei < i.Height; hei++)
-	{
-		for(int len = 0; len < i.Width; len++)
-		{
-			img.pixel[hei*img.Width + len] = temp[hei*img.Width + len];
-		}
-	}
-	delete[](i.pixel);
-	return img;
-}*/
 Image compression(Image i, int nbNeurones)
 {
 	Image img;
@@ -720,13 +521,17 @@ void sauvegardeRN(Reseau r, string chemin)
 		fichier << r.vCouches[r.getNbCouches() - 1].getNbNeurones() << " " << r.tauxApprentissage << "\n";
 
 		//Mettre tous les mPoids
-
+		//cout << "MATRICE POIDS\n" << r.vCouches[0].mPoids << endl;
+		
 		for(int i = 0; i < r.getNbCouches()-1; i++)
 		{ //Pour toutes les couches sauf la dernière
+			//cout << "Couche : " << i << endl;
 			for(int n = 0; n < r.vCouches[i].getNbNeurones(); n++)
 			{ //n est le neurone de la couche actuelle
+				//cout << "	Neurone actuel : " << n << endl;
 				for(int m = 0; m < r.vCouches[i+1].getNbNeurones(); m++)
 				{ //m est le neurone de la couche suivante
+					//cout << "		Neurone suivant : " << m <<endl;
 					fichier << r.vCouches[i].mPoids(m,n) << " "; //on récupère le poids entre n et m
 				}
 				//Potentiellement mettre un char spécial pour signifier qu'on passe à une nouvelle ligne ?

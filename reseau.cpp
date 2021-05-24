@@ -21,7 +21,10 @@ Reseau::Reseau(Parametres p)
 	vCouches.reserve(nbCouches);
 
 	//Couche d'entrée
-	vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesCache, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
+	if(nbCouches == 2)
+		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
+	else
+		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesCache, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
 
 	//Couches cachées-1
 	for (int i = 1; i < (nbCouches - 2); i++)
@@ -29,7 +32,8 @@ Reseau::Reseau(Parametres p)
 
 	//Couche cachée; avant-dernière
 	int i = 1; //ajout
-	vCouches.emplace_back(Couche(p.nbNeuronesCache, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesCache), aleaBiais(p.nbNeuronesCache)));
+	if(nbCouches > 2)
+		vCouches.emplace_back(Couche(p.nbNeuronesCache, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesCache), aleaBiais(p.nbNeuronesCache)));
 
 	//Couche de sortie
 	vCouches.emplace_back(Couche(p.nbNeuronesSortie, aleaBiais(p.nbNeuronesSortie)));
@@ -43,6 +47,10 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 	vCouches.reserve(nbCouches);
 
 	//Couche d'entrée
+	if(nbCouches == 2)
+		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
+	else
+		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesCache, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
 	vCouches.emplace_back(Couche(p.nbNeuronesEntree, mPoids[0], vBiais[0]));
 
 	//Couches cachées-1
@@ -52,7 +60,8 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 	}
 
 	//Couche cachée; avant-dernière
-	vCouches.emplace_back(Couche(p.nbNeuronesCache, mPoids[nbCouches - 2], vBiais[nbCouches - 2]));
+	if(nbCouches > 2)
+		vCouches.emplace_back(Couche(p.nbNeuronesCache, mPoids[nbCouches - 2], vBiais[nbCouches - 2]));
 
 	//Couche de sortie
 	vCouches.emplace_back(Couche(p.nbNeuronesSortie, vBiais[nbCouches - 1]));
@@ -342,7 +351,7 @@ vector<VectorXd> Reseau::allLabels(vector<int> labels)
 
 void Reseau::entrainement(vector<VectorXd> setFichiers, vector<int> labels)
 {
-	bool verifRetro = true;
+	bool verifRetro = false;
 
 	while(setFichiers.size()) //TOUS les fichiers
 	{
@@ -350,10 +359,10 @@ void Reseau::entrainement(vector<VectorXd> setFichiers, vector<int> labels)
 		VectorXd label = retourLabel(labels.back());
 		setFichiers.pop_back(); labels.pop_back();
 
-		unsigned int tauxEchec = 0;
-		while(verifRetro)
+		unsigned int tauxEchec = -1;
+		while(!verifRetro)
 		{
-			verifRetro = retropropagation(image, label);
+			verifRetro = this->retropropagation(image, label);
 			tauxEchec++;
 		}
 		stats.push_back(tauxEchec);

@@ -1,4 +1,4 @@
-#if !defined(MAINWINDOW_HPP)
+#ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
 
@@ -20,6 +20,8 @@
 #include <eigen3/Eigen/Dense>
 #include <vector>
 #include <memory>
+#include <QLabel>
+
 
 using namespace QtCharts;
 using namespace Eigen;
@@ -32,20 +34,19 @@ class MainWindow : public QMainWindow
 private:
     QPushButton* creer;//slot fait
     QPushButton* charger;//slot fait
-
     QVBoxLayout* boxButton1;
-    QPushButton* simulationP;//A FAIRE
-    QPushButton* apprentissage;//A FAIRE
-    QPushButton* sauvegardeR;//A FAIRE
-    QPushButton* sauvegardeS;//A FAIRE
+    QPushButton* simulationP;//slot fait
+    QPushButton* apprentissage;//slot pas fait
+    QPushButton* sauvegardeR;//slot fait
+    QPushButton* sauvegardeS;//slot fait
     QVBoxLayout* boxButton2;
     QVBoxLayout* boxAllButton;
-
-    QString cheminDacces;
-    QGroupBox* groupBox;
-
     QBoxLayout* graphe;
-    QPushButton* quitt;
+    QString cheminDacces;    
+    QLabel res;
+
+
+
 
 //Attribut ajouter pra rapport au cahier des spec
     bool paint;// pour maj le paintevent
@@ -67,15 +68,12 @@ public:
     ~MainWindow(); 
 	QChartView* affGraphe(QString f);
     void resultat(string resultatMap);
-	//QString getChemin(); ne sers finalement a rien car on l'utilise pas en dehors
 	void afficherStructure();
     Parametres chargerRN(QString fichierTXT, vector<MatrixXd>* mPoids, vector<VectorXd>* vBiais );
     void afficheRN(Parametres param, vector<MatrixXd>* mPoids);
     
-
 protected:
     void paintEvent(QPaintEvent *event) override;
-    //virtual bool event(QEvent *event) override;
     
     
 //les slot qui n'ont pas ete ajouter au cahier des spec
@@ -83,8 +81,7 @@ public slots:
     
 
     //fenetre de saisi des parametre RN par user
-    //Parametres sendToStructParam();
-    void sendToStructParam(); // deviens reseau car on le creer 
+    void sendToStructParam(); 
     void saisieParam();
 	QString openDirectory();
     QString saveFileName();

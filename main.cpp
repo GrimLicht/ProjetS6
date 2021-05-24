@@ -12,14 +12,15 @@ int main(int argc, char **argv)
 {
 	Parametres param;
 	param.typeSim = 1;
-	param.nbCouches = 6;
+	param.nbCouches = 2;
 	param.nbNeuronesEntree = 28*28;
-	param.nbNeuronesCache = 10;
-	param.nbNeuronesSortie = 2;
+	param.nbNeuronesCache = 0;
+	param.nbNeuronesSortie = 26;
 	param.tauxApprentissage = 30;
 
 	Reseau res(param);
-
+	//cout << "NB NEURONES FINAL" << res.vCouches[res.nbCouches -1].nbNeurones << endl;
+	//sauvegardeRN(res, "papa.txt");
 	/*VectorXd entree; entree = aleaBiais(3);
 	cout << "Vecteur test : " << entree << endl;
 
@@ -43,19 +44,19 @@ int main(int argc, char **argv)
 	sauvegardeStat(res, "stat.txt");*/
 	
 	/*MNIST img;
-	//img = recupDonneesFileMNIST("emnist-letters-train-images-idx3-ubyte", "emnist-letters-train-labels-idx1-ubyte");
-	img = recupDonneesFileMNISTSimulation("emnist-letters-test-images-idx3-ubyte");
+	img = recupDonneesFileMNIST("MNIST/emnist-letters-train-images-idx3-ubyte", "MNIST/emnist-letters-train-labels-idx1-ubyte");
+	//img = recupDonneesFileMNISTSimulation("emnist-letters-test-images-idx3-ubyte");
 	VectorXd MNISTAttendu = etiquetteMNIST(img, param.typeSim);
-	cout << "Vecteur Attendu : " << MNISTAttendu << endl;
+	cout << "Vecteur Attendu : " << endl << MNISTAttendu << endl;
 
 	VectorXd entree = allPixelMNIST(img);*/
-	/*bool verif = false;
-	while(!verif)
+	bool verif = false;
+/*	while(!verif)
 	{
+		cout << "On passe part la retro" << endl;
 		verif = res.retropropagation(entree, MNISTAttendu);
 		cout << "Vecteur de sortie :\n" << res.vCouches[res.nbCouches-1].vActivation << endl;
 	}*/
-
 
 	//TESTS POUR LES FONCTIONS BITMAPS & LEAKS
 	/*BitMapFileHeader header;
@@ -79,24 +80,30 @@ int main(int argc, char **argv)
 	//cout << "LA REPONSE EST : " << resToString(19, 1) << endl;
 	//string a = resToString(19, 1);
 	//cout << " J'ai dit " << a << endl;
-	vector<int> labels;
+	/*vector<int> labels;
 	vector<VectorXd> vec = allImage(&labels, "BMP", 28*28);
 	while(vec.size())
 	{
 		vec.pop_back();
 		labels.pop_back();
-	}
-
+	}*/
+	vector<int> labels;
+	vector<VectorXd> all = recupDonneesFileMNIST("MNIST/emnist-letters-train-images-idx3-ubyte", "MNIST/emnist-letters-train-labels-idx1-ubyte", &labels);
+	cout << "LA FIN EST PROOOOCHE ATTENNTION A LA COLERE DIVIIIINE" << endl;
+	cout << "Testemoi ca : " << all.back() << endl;
 	//On supprime les couches
 	while(res.vCouches.size())
 	{
 		delete[](res.vCouches.back().error);
 		res.vCouches.pop_back();
 	}
+	all.clear();
 	//On supprime les stats
 	res.stats.clear();
 
-	/*//Libere BitMapFileHeader
+	//DELETES MIS DANS allImage !
+	/*
+	//Libere BitMapFileHeader
 	delete[](header.type);
 	delete[](header.reserved);
 	//Libere BitMapImageHeader

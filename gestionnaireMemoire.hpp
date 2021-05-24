@@ -49,25 +49,14 @@ struct Image
 	int etiquette;
 };
 
-//Structure MNIST
-struct MNIST 
-{
-	unsigned long Width ;
-	unsigned long Height ; 
-	double pixels[28][28];
-	int etiquette ;
-};
-
 //Méthodes du gestionnaire de mémoire
 int reverseInt(int i);
-MNIST recupDonneesFileMNIST(string fImage, string fLabel);
-MNIST recupDonneesFileMNISTSimulation(string fImage);
+vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int> *labels);
+VectorXd recupDonneesFileMNISTSimulation(string fImage);
 void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHeader *image);
 Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(Image i, int nbNeurones);
 VectorXd allPixelBitMap(Image i, int nbNeurones);
-VectorXd etiquetteMNIST(MNIST m, int typeSimu);
-VectorXd allPixelMNIST(MNIST m);
 vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones);
 void sauvegardeRN(Reseau r, string chemin);
 void sauvegardeStat(Reseau r, string chemin);
