@@ -21,24 +21,22 @@ Reseau::Reseau(Parametres p)
 	vCouches.reserve(nbCouches);
 
 	//Couche d'entrée
-	if(nbCouches == 2)
+	if (nbCouches == 2)
 		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
 	else
-		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesCache, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
-
-	//Couches cachées-1
+		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesCache, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree))); //Couches cachées-1
+	
 	for (int i = 1; i < (nbCouches - 2); i++)
 		vCouches.emplace_back(Couche(p.nbNeuronesCache, aleaPoids(p.nbNeuronesCache, p.nbNeuronesCache), aleaBiais(p.nbNeuronesCache)));
 
 	//Couche cachée; avant-dernière
 	int i = 1; //ajout
-	if(nbCouches > 2)
+	if (nbCouches > 2)
 		vCouches.emplace_back(Couche(p.nbNeuronesCache, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesCache), aleaBiais(p.nbNeuronesCache)));
 
 	//Couche de sortie
 	vCouches.emplace_back(Couche(p.nbNeuronesSortie, aleaBiais(p.nbNeuronesSortie)));
 }
-
 Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 {
 	typeSim = p.typeSim;
@@ -47,25 +45,16 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 	vCouches.reserve(nbCouches);
 
 	//Couche d'entrée
-	if(nbCouches == 2)
-		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
-	else
-		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesCache, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
 	vCouches.emplace_back(Couche(p.nbNeuronesEntree, mPoids[0], vBiais[0]));
 
-	//Couches cachées-1
-	for (int i = 1; i < (nbCouches - 2); i++)
-	{
+	//Couches cachées
+	for (int i = 1; i <= (nbCouches - 2); i++)
 		vCouches.emplace_back(Couche(p.nbNeuronesCache, mPoids[i], vBiais[i]));
-	}
-
-	//Couche cachée; avant-dernière
-	if(nbCouches > 2)
-		vCouches.emplace_back(Couche(p.nbNeuronesCache, mPoids[nbCouches - 2], vBiais[nbCouches - 2]));
 
 	//Couche de sortie
 	vCouches.emplace_back(Couche(p.nbNeuronesSortie, vBiais[nbCouches - 1]));
 }
+
 
 //Destructeur
 Reseau::~Reseau() 

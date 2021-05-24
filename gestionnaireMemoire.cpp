@@ -496,9 +496,8 @@ void sauvegardeStat(Reseau r, string chemin)
 	{
 		vector<unsigned int> vecStats = r.getStats();
 		for (int i = 0; i < vecStats.size(); i++)
-		{
 			txt << vecStats[i] << endl;
-		}
+
 		txt.close();
 	}
 	else cout << "Erreur lors de l'ouverture du fichier\n";
@@ -508,53 +507,41 @@ void sauvegardeRN(Reseau r, string chemin)
 { //Adapter avec des getteurs
 
 	ofstream fichier(chemin, ios::out | ios::trunc); //permet de supp le contenu du fichier avant l'écriture
-	if (fichier) // Si le fichier est ouvert
+	if (fichier)									 // Si le fichier est ouvert
 	{
 		//Structure paramètres sur la 1ère ligne
 		fichier << r.typeSim << " " << r.getNbCouches() << " " << r.vCouches[0].getNbNeurones() << " ";
 
 		if (r.getNbCouches() > 2) //Si on a + de 2 couches, on met le nombre de neurones pour la couche cachée
 			fichier << r.vCouches[1].getNbNeurones() << " ";
-		else //Sinon, on met 0
-			fichier << "0 ";
-
-		fichier << r.vCouches[r.getNbCouches() - 1].getNbNeurones() << " " << r.tauxApprentissage << "\n";
-
-		//Mettre tous les mPoids
-		//cout << "MATRICE POIDS\n" << r.vCouches[0].mPoids << endl;
+		else fichier << "0 "; //Sinon, on met 0
 		
-		for(int i = 0; i < r.getNbCouches()-1; i++)
+		fichier << r.vCouches[r.getNbCouches() - 1].getNbNeurones() << " " << r.tauxApprentissage << "\n";
+		
+		//Mettre tous les mPoids
+		for (int i = 0; i < r.getNbCouches() - 1; i++)
 		{ //Pour toutes les couches sauf la dernière
-			//cout << "Couche : " << i << endl;
-			for(int n = 0; n < r.vCouches[i].getNbNeurones(); n++)
+			for (int n = 0; n < r.vCouches[i].getNbNeurones(); n++)
 			{ //n est le neurone de la couche actuelle
-				//cout << "	Neurone actuel : " << n << endl;
-				for(int m = 0; m < r.vCouches[i+1].getNbNeurones(); m++)
-				{ //m est le neurone de la couche suivante
-					//cout << "		Neurone suivant : " << m <<endl;
-					fichier << r.vCouches[i].mPoids(m,n) << " "; //on récupère le poids entre n et m
-				}
+				for (int m = 0; m < r.vCouches[i + 1].getNbNeurones(); m++) //m est le neurone de la couche suivante
+					fichier << r.vCouches[i].mPoids(m, n) << " "; //on récupère le poids entre n et m
 				//Potentiellement mettre un char spécial pour signifier qu'on passe à une nouvelle ligne ?
 			}
-			//On passe à la matrice de la couche d'après
-			fichier << "\n";
+			fichier << "\n"; //On passe à la matrice de la couche d'après
 		}
 
 		//Mettre tous les vBiais
 
-		for (int i = 0; i < r.getNbCouches(); i++)
-		{ //pour chaque couche i qui sont sur chaque ligne i+1
-			for (int j = 0; j < r.vCouches[i].getNbNeurones(); j++)
-			{ //pour chaque neurone j, copie des biais
+		for (int i = 0; i < r.getNbCouches(); i++) //pour chaque couche i qui sont sur chaque ligne i+1
+		{ 
+			for (int j = 0; j < r.vCouches[i].getNbNeurones(); j++)//pour chaque neurone j, copie des biais
 				fichier << r.vCouches[i].vBiais(j) << " ";
-			}
+
+			fichier << "\n";
 		}
 
 		//On a fini d'écrire dans le fichier
 		fichier.close();
 	}
-	else // Si le fichier ne s'est pas ouvert
-	{
-		cout << "Erreur lors de l'enregistrement" << endl;
-	}
+	else cout << "Erreur lors de l'enregistrement" << endl; // Si le fichier ne s'est pas ouvert
 }
