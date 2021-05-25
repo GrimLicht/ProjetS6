@@ -29,11 +29,9 @@ vector<VectorXd> recupDonneesFileMNIST(int typeSimu, string fImage, string fLabe
 {
 	vector<VectorXd> all;
 	VectorXd pixel(28*28);
-	//int nbAlea;
 	int cpt=0;
 
 	/* Ouverture et lecture du fichier Image */
-
 	ifstream monFichier(fImage);
 
 	if(monFichier.is_open())
@@ -58,8 +56,6 @@ vector<VectorXd> recupDonneesFileMNIST(int typeSimu, string fImage, string fLabe
 		//Lecture de la valeur du pixel dans le fichier
 		for(int i=0; i<numberOfImages; ++i)
 		{
-			//out << i << endl;
-			//cout << "Image n. " << i << endl;
 			for(int r=0; r<numberOfRows; ++r)
 			{
 				for(int c=0; c<numberOfColumns; ++c)
@@ -70,7 +66,7 @@ vector<VectorXd> recupDonneesFileMNIST(int typeSimu, string fImage, string fLabe
 					int valPixel=(int)temp;
 
 					pixel[r*28 + c] = valPixel / 255.0;
-					if (isnan(pixel[r*28 + c]))
+					if(isnan(pixel[r*28 + c]))
 						pixel[i] = 0;
 
 					cpt++;
@@ -98,16 +94,13 @@ vector<VectorXd> recupDonneesFileMNIST(int typeSimu, string fImage, string fLabe
 		//Lecture du label dans le fichier
 		for(int i=0; i<numberOfItems; ++i)
 		{
-			//cout << i << endl;
 			char temp2 = 0;
 			monFichier2.read(&temp2, sizeof(temp2));
-			cout << "Label : " << (int)temp2 <<endl;
 			int val = (int)temp2;
 			if(typeSimu == 1) val--;
 			labels->push_back(val);
 		}
 	}
-
 	else cout << "Impossible d'ouvrir le fichier de label" << endl;
 
 	return all;
@@ -121,7 +114,6 @@ VectorXd recupDonneesFileMNISTSimulation(string fImage)
 	int cpt=0;
 
 	/* Ouverture et lecture du fichier Image */
-
 	ifstream monFichier(fImage);
 
 	if(monFichier.is_open())
@@ -162,28 +154,14 @@ VectorXd recupDonneesFileMNISTSimulation(string fImage)
 						int valPixel=(int)temp;
 						
 						//Si le nombre aléatoire et le numéro d'image coincide, alors on stocke la valeur du pixel entre 0 et 255 dans le tableau de pixel de la structure MNIST
-
-							sortie[r*28 + c] = valPixel / 255.0;
-
-							//Permet d'afficher correctement la matrice des pixels de l'image
-							/*if(cpt%28==0)
-								cout << "\n";
-							if(valPixel>=0 && valPixel<=9)
-								cout << valPixel << "	 ";
-							else if(valPixel >=10 && valPixel <=99)
-								cout << valPixel << "	";
-							else if(valPixel >=100 && valPixel <= 999)
-								cout << valPixel << " ";*/
-
-							cpt++;
-						
+						sortie[r*28 + c] = valPixel / 255.0;
+						cpt++;
 					}
 				}
 				return sortie;
 			}
 		}
 	}
-
 	else cout << "Impossible d'ouvrir le fichier d'image" << endl;
 
 	return sortie;
@@ -200,20 +178,16 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 	if(is.is_open())
 	{
 		//image->etiquette=f;
-		//HEADER
-		//cout << "///////////////////HEADER///////////////////" << endl;
-		
+		//HEADER		
 		// lecture du type => B M dans notre cas 
 		char* type = new char[2];
 		is.read(type, 2);
 		header->type=type;
-		//cout << "Signature: "<< header->type << endl;
 
 		// lecture de la taille du file header	
 		int size;
 		is.read(reinterpret_cast<char*>(&size), 4);
 		header->size=size;
-		//cout << "File size: " << header->size << endl;
 
 		// lecture de la partie reserved 
 		char* tmp = new char[4];
@@ -224,83 +198,66 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		int offset;
 		is.read(reinterpret_cast<char*>(&offset), 4);
 		header->offset=offset;
-		//cout << "DataOffset: " << header->offset << endl;
 		
 		//INFOHEADER
-		//cout << "///////////////////INFOHEADER///////////////////" << endl;
-
 		// lire la taille du infoheader 
 		int tailleHeaderImage; 
 		is.read(reinterpret_cast<char*>(&tailleHeaderImage),4) ; 
 		image->Size=tailleHeaderImage;
-		//cout << "Size: " << image->Size << endl ; 
 
 		// lire la largeur 
 		int width; 
 		is.read(reinterpret_cast<char*>(&width),4); 
 		image->Width=width;
-		//cout << "Width: "	<< image->Width << endl ; 
 
 		// lecture de la hauteur 
 		int height; 
 		is.read(reinterpret_cast<char*>(&height),4) ; 
 		image->Height=height;
-		//cout << "Height: " << image->Height << endl ; 
 
 		// lecture des color planes du infoHeader
 		int numberOfColorPlanes ; 
 		is.read(reinterpret_cast<char*>(&numberOfColorPlanes),2) ; 
 		image->Planes=numberOfColorPlanes;
-		//cout << "Number of Color Planes: " << image->Planes << endl ; 
 
 		// lecture des bits par pixel du infoHeader
 		char numberOfBitPerPixel ; 
 		is.read(reinterpret_cast<char*>(&numberOfBitPerPixel),2 ) ; 
 		image->bitCount=numberOfBitPerPixel;
-		//cout << "Number of bit per pixel: " << (int)image->bitCount << endl ; 
 
 		// lecture de la	compression du infoHeader
 		int compression ; 
 		is.read(reinterpret_cast<char*>(&compression),4) ; 
 		image->Compression=compression;
-		//cout << "Compression: " << image->Compression << endl ; 
 
 		// lecture de la taille de l'image 
 		int tailleImage ; 
 		is.read(reinterpret_cast<char*>(&tailleImage),4) ; 
 		image->imageSize=tailleImage;
-		//cout << "Image size: " << image->imageSize << endl ; 
 
 		// lecture de la résolution horizontale 
 		int horizontalResolution;
 		is.read(reinterpret_cast<char*>(&horizontalResolution),4);
 		image->heightPixelsPerMeter=horizontalResolution;
-		//cout << "Resolution horizontal: " << image->heightPixelsPerMeter << endl;
 
 		// lecture de la résolution verticale 
 		int verticalResolution;
 		is.read(reinterpret_cast<char*>(&verticalResolution),4);
 		image->widthPixelsPerMeter=verticalResolution;
-		//cout << "Resolution vertical: " << image->widthPixelsPerMeter << endl;
 
 		//lecture du nombre de couleurs utilisées dans l'image 
 		int colorUsed;
 		is.read(reinterpret_cast<char*>(&colorUsed),4);
 		image->pixelsUsed=colorUsed;
-		//cout << "Colors used: " << image->pixelsUsed << endl;
 
 		//lecture des couleurs importantes 
 		int importantColors;
 		is.read(reinterpret_cast<char*>(&importantColors),4);
 		image->importantpixels=importantColors;
-		//cout << "Important colors: " << image->importantpixels << endl;
 		
 		//No colortable because bits per pixel > 8 (24)
 
-		//Pixel
-
-		
-		//cout << "///////////////////PIXEL///////////////////" << endl;
+		//PIXELS
 		unsigned char rgb[3]; // un tableau contenant les trois composants R, G et B 
 		// allocation de mémoire : 
 		image->R=new unsigned int[width*height];
@@ -308,87 +265,22 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 		image->B=new unsigned int[width*height];
 		// le pitch est le nombre d'octet que prend une ligne => dans notre cas il faut que ça soit un multiple de 4 octets
 		int pitch=corrpitch[(3*width)%4];
-		//cout << "Height :" << height << endl;
-		//cout << "Width :" << width << endl;
+		
 		for (int j=0; j<height; j++)
 		{
-			//cout << "J : " << j << endl;
 			for(int i=0; i<width; i++)
 			{
-				//cout << "	I : " << i << endl;
 				// lecture et stockage dans rgb[]
 				is.read(reinterpret_cast<char*>(&rgb),3);
 				image->R[j*width + i] = rgb[2];
 				image->G[j*width + i] = rgb[1];
 				image->B[j*width + i] = rgb[0];
-				//cout << "Pixel[" << j <<"][" << i << "] : R[" << (int)image->R[i*width+j] << "], G[" << (int)image->G[i*width+j] << "], B[" << (int)image->B[i*width+j] << "]" << endl;
 			}
 			// lecture du pitch à ignorer 
 			is.read(reinterpret_cast<char*>(&rgb),pitch);
 		}
 	}
 }
-
-/* Permet de récupérer les données du fichier BMP et les stocker dans les struct BMPFileHeader et BMPImageHeader */
-/*VectorXd recupAnalyseDonneesBmp2 (string f, int nbNeurones)
-{	
-	char corrpitch[4] = {0,3,2,1};
-	int poubelle;
-	// ouverture du fichier 
-	fstream is;
-	is.open(f, ios::in|ios::binary);
-	cout <<"Le fichier est ouvert" << endl;
-	if(is.is_open())
-	{
-		//////////////////////////////////////////////
-		is.read(reinterpret_cast<char*>(&poubelle),18) ; 
-		///INUTILE JUSQUE LA
-
-		// lire la largeur 
-		int width; 
-		is.read(reinterpret_cast<char*>(&width),4); 
-
-		// lecture de la hauteur 
-		int height; 
-		is.read(reinterpret_cast<char*>(&height),4) ; 
-
-		is.read(reinterpret_cast<char*>(&poubelle),28) ;
-		cout << "Taille : " << height << " " << width << endl;
-		//cout << "///////////////////PIXEL///////////////////" << endl;
-		unsigned char rgb[3]; // un tableau contenant les trois composants R, G et B 
-		// allocation de mémoire : 
-		double *pixel = new double[width*height];
-		// le pitch est le nombre d'octet que prend une ligne => dans notre cas il faut que ça soit un multiple de 4 octets
-		int pitch=corrpitch[(3*width)%4];
-		//cout << "Height :" << height << endl;
-		//cout << "Width :" << width << endl;
-		for (int j=0; j<height; j++)
-		{
-			for(int i=0; i<width; i++)
-			{
-				// lecture et stockage dans rgb[]
-				is.read(reinterpret_cast<char*>(&rgb),3);
-				int lightness = rgb[2] + rgb[1] + rgb[0];
-				int exp1 = lightness / 8;
-				int man1 = lightness % 8;
-				int mantissa_bits = (1 << 23) + (man1 << 20) + (rgb[2] << 8) + rgb[1];
-				double multiplier = pow(2, exp1 - 119);
-				double rgb_encoding = mantissa_bits * multiplier; 
-				pixel[j*width + i] = rgb_encoding;
-			}
-			// lecture du pitch à ignorer 
-			is.read(reinterpret_cast<char*>(&rgb),pitch);
-		}
-		cout << "Avant la compression" << endl;
-		VectorXd v(nbNeurones);
-		v = compressionVec(pixel, height, width, nbNeurones);
-		cout << "Apres la compression" << endl;
-		delete[](pixel);
-		return v;
-	}
-	VectorXd v(0);
-	return v;
-}*/
 
 /* Permet de transférer les informations utiles de la structure BMPImageHeader à la structure Image */
 Image convertBitmapToImage(BitMapImageHeader b)
@@ -409,7 +301,6 @@ Image convertBitmapToImage(BitMapImageHeader b)
 			double multiplier = pow(2, exp1 - 119);
 			double rgb_encoding = mantissa_bits * multiplier; 
 			image.pixel[i]=rgb_encoding;
-			//cout << "RGB PIXEL: " << image.pixel[i] << endl;
 	}
 	return image;
 }
@@ -425,13 +316,10 @@ Image compression(Image i, int nbNeurones)
 	for(int hei = 0; hei < i.Height; hei++)
 	{
 		for(int len = 0; len < i.Width; len++)
-		{
 			temp[hei*img.Width + len] = i.pixel[hei*img.Width + len];
-		}
 	}
-	//temp = i.pixel;
+
 	i.pixel = nullptr;
-	//delete[](i.pixel);
 	while(img.Width*img.Height > nbNeurones)
 	{
 		img.Width--; img.Height--;
@@ -440,16 +328,13 @@ Image compression(Image i, int nbNeurones)
 			for(int n = 0; n < img.Width; n++) 
 				temp[m*img.Width + n] = (temp[m*img.Width + n] + temp[(m+1)*img.Width] + temp[m*img.Width + n+1] + temp[(m+1)*img.Width + n+1])/4; 
 		}
-		//i.pixel = temp;//la matrice deviens donc une matrice avec une taille (lignes -1, colonnes -1)
 	}
 
 	img.pixel = new double[i.Width * i.Height];
 	for(int hei = 0; hei < i.Height; hei++)
 	{
 		for(int len = 0; len < i.Width; len++)
-		{
 			img.pixel[hei*img.Width + len] = temp[hei*img.Width + len];
-		}
 	}
 	delete[](temp);
 	return img;
@@ -496,22 +381,15 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 	string dirname;
 	vector<VectorXd> bmp;
 
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		cout << "Image : " << i << endl;
 		int choix;
 		//choix = unif(re) % 2; // choix 0 ou 1 pour chien ou chat
-		//cout << "Name of folders" << endl;
 		choix = rand()%2;
-		if (choix == 0)		// le choix ça sera le label du coup
-		{
-			dirname = "/Cats";
-		}
-		else
-		{
-			dirname = "/Dogs";
-		}
-		// dirname = to_string(choix);
+		if(choix == 0)	dirname = "/Cats";
+		else dirname = "/Dogs";
+
 		// ouvrir le directory ou concatener avec string f => doss_entr/chien_ou_chat
 		string open;
 		open = f + dirname;
@@ -542,7 +420,6 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 		//Libere struct Image
 		delete[](img.pixel);
 	}
-	//cout << "1000 done" << endl;
 	return bmp;
 }
 
@@ -551,7 +428,7 @@ void sauvegardeStat(Reseau r, string chemin)
 {
     ofstream txt(chemin, ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
 
-    if (txt && chemin != "")
+    if(txt && chemin != "")
     {
         vector<unsigned int> vecStats = r.getStats();
         for (int i = 0; i < vecStats.size(); i++)
@@ -567,14 +444,13 @@ void sauvegardeStat(Reseau r, string chemin)
 
 void sauvegardeRN(Reseau r, string chemin)
 { //Adapter avec des getteurs
-	//cout << "On commence la sauvegarde" << endl;
 	ofstream fichier(chemin, ios::out | ios::trunc); //permet de supp le contenu du fichier avant l'écriture
-	if (fichier && chemin != "")									 // Si le fichier est ouvert
+	if(fichier && chemin != "")									 // Si le fichier est ouvert
 	{
 		//Structure paramètres sur la 1ère ligne
 		fichier << r.typeSim << " " << r.getNbCouches() << " " << r.vCouches[0].getNbNeurones() << " ";
 
-		if (r.getNbCouches() > 2) //Si on a + de 2 couches, on met le nombre de neurones pour la couche cachée
+		if(r.getNbCouches() > 2) //Si on a + de 2 couches, on met le nombre de neurones pour la couche cachée
 			fichier << r.vCouches[1].getNbNeurones() << " ";
 		else fichier << "0 "; //Sinon, on met 0
 		
@@ -586,7 +462,7 @@ void sauvegardeRN(Reseau r, string chemin)
 			for (int n = 0; n < r.vCouches[i].getNbNeurones(); n++)
 			{ //n est le neurone de la couche actuelle
 				for (int m = 0; m < r.vCouches[i + 1].getNbNeurones(); m++) //m est le neurone de la couche suivante
-					fichier << r.vCouches[i].mPoids(m, n) << " "; //on récupère le poids entre n et m
+					fichier << r.vCouches[i].getPoids(m, n) << " "; //on récupère le poids entre n et m
 				//Potentiellement mettre un char spécial pour signifier qu'on passe à une nouvelle ligne ?
 			}
 			fichier << "\n"; //On passe à la matrice de la couche d'après
@@ -596,14 +472,12 @@ void sauvegardeRN(Reseau r, string chemin)
 		for (int i = 0; i < r.getNbCouches(); i++) //pour chaque couche i qui sont sur chaque ligne i+1
 		{ 
 			for (int j = 0; j < r.vCouches[i].getNbNeurones(); j++)//pour chaque neurone j, copie des biais
-				fichier << r.vCouches[i].vBiais(j) << " ";
+				fichier << r.vCouches[i].getBiais(j) << " ";
 
 			fichier << "\n";
 		}
-
 		//On a fini d'écrire dans le fichier
 		fichier.close();
-		//cout << "On a fini la sauvegarde" << endl;
 	}
 	else cout << "Erreur lors de l'enregistrement" << endl; // Si le fichier ne s'est pas ouvert
 }

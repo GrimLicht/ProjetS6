@@ -16,14 +16,17 @@ using Eigen::VectorXd;
 
 class Couche
 {
+	public:
+	friend class MainWindow;
 	friend class Reseau;
-	friend class ext;
+	//friend class ext;
+	//friend void sauvegardeRN(Reseau r, string chemin);
 
-	public :
+	private :
 	unsigned int nbNeurones;
 	double* error;
-	VectorXd vBiais;
 	VectorXd vActivation;
+	VectorXd vBiais;
 	MatrixXd mPoids;
 
 	public:
@@ -34,6 +37,8 @@ class Couche
 
 	//Setters/Getters
 	unsigned int getNbNeurones();
+	double getPoids(int i, int j);
+	double getBiais(int i);
 
 	//Méthodes de RNU
 	//MatrixXd aleaPoids();

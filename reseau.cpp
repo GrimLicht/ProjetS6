@@ -21,22 +21,21 @@ Reseau::Reseau(Parametres p)
 	vCouches.reserve(nbCouches);
 
 	//Couche d'entrée
-	if (nbCouches == 2)
+	if (nbCouches == 2) //Si il n'y a pas de couche cachée
 		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree)));
 	else
 		vCouches.emplace_back(Couche(p.nbNeuronesEntree, aleaPoids(p.nbNeuronesCache, p.nbNeuronesEntree), aleaBiais(p.nbNeuronesEntree))); //Couches cachées-1
 	
-	for (int i = 1; i < (nbCouches - 2); i++)
+	for (int i = 1; i < (nbCouches - 2); i++) //Couches cachées - 1
 		vCouches.emplace_back(Couche(p.nbNeuronesCache, aleaPoids(p.nbNeuronesCache, p.nbNeuronesCache), aleaBiais(p.nbNeuronesCache)));
 
-	//Couche cachée; avant-dernière
-	int i = 1; //ajout
-	if (nbCouches > 2)
+	if (nbCouches > 2) //Couche cachée; avant-dernière
 		vCouches.emplace_back(Couche(p.nbNeuronesCache, aleaPoids(p.nbNeuronesSortie, p.nbNeuronesCache), aleaBiais(p.nbNeuronesCache)));
 
 	//Couche de sortie
 	vCouches.emplace_back(Couche(p.nbNeuronesSortie, aleaBiais(p.nbNeuronesSortie)));
 }
+
 Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 {
 	typeSim = p.typeSim;
@@ -47,47 +46,42 @@ Reseau::Reseau(Parametres p, vector<MatrixXd> mPoids, vector<VectorXd> vBiais)
 	//Couche d'entrée
 	vCouches.emplace_back(Couche(p.nbNeuronesEntree, mPoids[0], vBiais[0]));
 
-	//Couches cachées
-	for (int i = 1; i <= (nbCouches - 2); i++)
+	for (int i = 1; i <= (nbCouches - 2); i++) //Couches cachées
 		vCouches.emplace_back(Couche(p.nbNeuronesCache, mPoids[i], vBiais[i]));
 
 	//Couche de sortie
 	vCouches.emplace_back(Couche(p.nbNeuronesSortie, vBiais[nbCouches - 1]));
 }
 
-
-//Destructeur
-Reseau::~Reseau() 
+Reseau::~Reseau() //Destructeur
 {
 	while(vCouches.size())
-	{
 		vCouches.pop_back();
-	}
+
 	stats.clear();
 }
 
 //Getteurs
 unsigned int Reseau::getNbCouches() { return nbCouches; };
 
-vector<unsigned int> Reseau::getStats(){ return stats;}
+vector<unsigned int> Reseau::getStats() { return stats;}
 
-vector<MatrixXd> Reseau::getPoids()
+/*vector<MatrixXd> Reseau::getPoids()
 {
 	vector<MatrixXd> poids;
-	poids.resize(nbCouches); //mettre taille  au vec
+	poids.resize(nbCouches); //Ajuste taille du vecteur
 
 	for (int i = 0; i < nbCouches; i++)
-	{
 		poids.push_back(vCouches[i].mPoids);
-	}
+
 	return poids;
-}
+}*/
 
 //Méthodes du RNU
 int Reseau::max(VectorXd sorties) //permet d'avoir l'indice de la valeur max
 {
-	double max = 0;
-	int indice = -1;
+	double max = 0;	int indice = -1;
+
 	for (int i = 0; i < sorties.size(); i++)
 	{
 		if (max < sorties[i])
@@ -99,23 +93,10 @@ int Reseau::max(VectorXd sorties) //permet d'avoir l'indice de la valeur max
 	return indice;
 }
 
-void Reseau::printReseau()
+int Reseau::simulation(VectorXd entrees)
 {
-	for(int i = 0; i < nbCouches; i++)
-	{
-		cout << "Matrice " << i << " :\n" << vCouches[i].mPoids << endl << endl;
-	}
-
-	for(int i = 0; i < nbCouches; i++)
-	{
-		cout << "Vecteur " << i << " :\n" << vCouches[i].vBiais << endl << endl;
-	}
-}
-
-int Reseau::simulation(VectorXd entrees) /*applique la propa + max */
-{
-	propagation(entrees);
-	return max(vCouches[nbCouches-1].vActivation);
+	propagation(entrees); //Propage les informations vers la couche de sortie du réseau
+	return max(vCouches[nbCouches-1].vActivation); //Renvoie le neurone de sortie ayant la plus grande valeur, soit "la réponse du réseau"
 }
 
 VectorXd sigmoide(VectorXd entree) //apparently slow
@@ -154,7 +135,7 @@ double Reseau::deriveeSigmoide(double sigmo)
 	return sortie;
 }
 
-MatrixXd Reseau::multiply(MatrixXd m, VectorXd v)
+VectorXd multiply(MatrixXd m, VectorXd v)
 {
 	VectorXd solution(m.col(0).size());
 	solution.Zero(m.col(0).size());
@@ -175,7 +156,7 @@ void Reseau::propagation(VectorXd entrees)
 	for (int i = 1; i < nbCouches; i++)
 	{
 		mult.Zero(vCouches[i].nbNeurones);
-		mult = multiply(vCouches[i - 1].mPoids, vCouches[i - 1].vActivation); //mult = vCouches[i - 1].mPoids * vCouches[i - 1].vActivation;
+		mult = multiply(vCouches[i - 1].mPoids, vCouches[i - 1].vActivation);
 
 		vCouches[i].vActivation = fast_sigmoide(mult + vCouches[i].vBiais); //modify the activation vector
 	}
@@ -183,121 +164,95 @@ void Reseau::propagation(VectorXd entrees)
 
 void Reseau::calculDelta(VectorXd resultatAttendu)
 {
-// 1. Output neuron deltas
-	//cout << "on commence les calculs" << endl;
-	//double *tabError = new double[vCouches[nbCouches-1].nbNeurones]; //tabError = [0] * len(self.output_layer.neurons)
-	for(int o = 0; o < vCouches[nbCouches-1].nbNeurones; o++)//for o in range(len(self.output_layer.neurons)):
-	{
-		//∂E/∂zⱼ
+	// 1. Output neuron deltas		//∂E/∂zⱼ
+	for(int o = 0; o < vCouches[nbCouches-1].nbNeurones; o++)
 		vCouches[nbCouches-1].error[o] = (vCouches[nbCouches-1].vActivation[o] - resultatAttendu[o]) * deriveeSigmoide(vCouches[nbCouches-1].vActivation[o]);
-		 //tabError[o]
-		 //= self.output_layer.neurons[o].calculate_pd_error_wrt_total_net_input(training_outputs[o]) = self.calculate_pd_error_wrt_output(target_output) * self.calculate_pd_total_net_input_wrt_input();
-		 //= -(target_output - self.output) * self.output * (1 - self.output)
-	}
-	//tabError = vCouches[nbCouches-1].error;
-	//cout << "on a calcule pour la couche de sortie" << endl;
 
 	//2. Hidden neuron deltas
-	double errorPoids;
 	for(int couche = nbCouches-2; couche >= 0; couche--)
 	{
-		for(int h = 0; h < vCouches[couche].nbNeurones; h++) //for h in range(len(self.hidden_layer.neurons)):
+		for(int h = 0; h < vCouches[couche].nbNeurones; h++)
 		{
 			// We need to calculate the derivative of the error with respect to the output of each hidden layer neuron
 			// dE/dyⱼ = Σ ∂E/∂zⱼ * ∂z/∂yⱼ = Σ ∂E/∂zⱼ * wᵢⱼ
 			double errorHidden = 0; //errorHidden = 0
-			for(int o = 0; o < vCouches[couche+1].nbNeurones; o++) //for o in range(len(self.output_layer.neurons)):
-				errorHidden += vCouches[nbCouches-1].error[o] * vCouches[couche].mPoids(o, h); //errorHidden += tabError[o] * self.output_layer.neurons[o].weights[h]
+			for(int o = 0; o < vCouches[couche+1].nbNeurones; o++) 
+				errorHidden += vCouches[nbCouches-1].error[o] * vCouches[couche].mPoids(o, h); 
 
 			// ∂E/∂zⱼ = dE/dyⱼ * ∂zⱼ/∂
-			vCouches[couche].error[h] = errorHidden * deriveeSigmoide(vCouches[couche].vActivation[h]);//tabErrorHidden[h] = errorHidden * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_input()
+			vCouches[couche].error[h] = errorHidden * deriveeSigmoide(vCouches[couche].vActivation[h]);
 		}
 	}
+}
 
-	//cout << "On a fini de calculer les deltas" << endl; /////////// correct
-
-	// 3. Update output neuron weights
-	for(int o = 0; o < vCouches[nbCouches-1].nbNeurones; o++) //for o in range(len(self.output_layer.neurons)):
+void Reseau::miseAJour()
+{
+		// 3. Update output neuron weights
+	double errorPoids;
+	for(int o = 0; o < vCouches[nbCouches-1].nbNeurones; o++) 
 	{
-		//cout << "Neurone " << o << " de la couche de sortie" << endl;
-		for(int w = 0; w < vCouches[nbCouches-2].nbNeurones; w++)//for w_ho in range(len(self.output_layer.neurons[o].weights)):
+		for(int w = 0; w < vCouches[nbCouches-2].nbNeurones; w++)
 		{
-			//cout << "	Neurone : " << w << " de la couche precedente " << endl;
 			// ∂Eⱼ/∂wᵢⱼ = ∂E/∂zⱼ * ∂zⱼ/∂wᵢⱼ
-			errorPoids = vCouches[nbCouches-1].error[o] * vCouches[nbCouches-2].vActivation[w];//pd_error_wrt_weight = tabError[o] * self.output_layer.neurons[o].calculate_pd_total_net_input_wrt_weight(w_ho)
-//			cout << "Apres le calcul de l'erreur par poids ca bloque pas ! ";
+			errorPoids = vCouches[nbCouches-1].error[o] * vCouches[nbCouches-2].vActivation[w];
+
 			// Δw = α * ∂Eⱼ/∂wᵢ
-			//cout << "Ajout : " << tauxApprentissage*errorPoids << endl;
 			if((vCouches[nbCouches-2].mPoids(o, w) - tauxApprentissage * errorPoids) <= 1)
-				vCouches[nbCouches-2].mPoids(o, w) -= tauxApprentissage * errorPoids; //self.output_layer.neurons[o].weights[w_ho] -= self.LEARNING_RATE * pd_error_wrt_weight
+				vCouches[nbCouches-2].mPoids(o, w) -= tauxApprentissage * errorPoids;
 		}
 	}
-
-	//cout << "On a fini de modif les poids de la couche de sortie" << endl;
 
 	// 4. Update hidden neuron weights
 	for(int couche = 0; couche < nbCouches-1; couche++)
 	{
-		for(int h = 0; h < vCouches[couche+1].nbNeurones; h++)//for h in range(len(self.hidden_layer.neurons)):
+		for(int h = 0; h < vCouches[couche+1].nbNeurones; h++)
 		{
-			for(int w = 0; w < vCouches[couche].nbNeurones; w++) //for w_ih in range(len(self.hidden_layer.neurons[h].weights)):
+			for(int w = 0; w < vCouches[couche].nbNeurones; w++)
 			{
 				// ∂Eⱼ/∂wᵢ = ∂E/∂zⱼ * ∂zⱼ/∂wᵢ
-				errorPoids = vCouches[couche+1].error[h] * vCouches[couche].vActivation[w]; //pd_error_wrt_weight = tabErrorHidden[h] * self.hidden_layer.neurons[h].calculate_pd_total_net_input_wrt_weight(w_ih)
+				errorPoids = vCouches[couche+1].error[h] * vCouches[couche].vActivation[w];
 
 				// Δw = α * ∂Eⱼ/∂wᵢ
 				if((vCouches[couche].mPoids(h, w) - tauxApprentissage * errorPoids) <= 1)
-					vCouches[couche].mPoids(h, w) -= tauxApprentissage * errorPoids; //self.hidden_layer.neurons[h].weights[w_ih] -= self.LEARNING_RATE * pd_error_wrt_weight
+					vCouches[couche].mPoids(h, w) -= tauxApprentissage * errorPoids;
 			}
 		}
 	}
-	//cout << "On a fini de modif tout les poids" << endl;
 }
 
 bool Reseau::retropropagation(VectorXd entree, VectorXd resultatAttendu)
 {
 	// propagation
 	propagation(entree);
-	//cout << "Matrice attendue : \n" << resultatAttendu << endl;
-	//cout << "Matrice de sortie : \n" << vCouches[nbCouches-1].vActivation << endl;
 	// récupération du resultatattendu
 	if (max(vCouches[nbCouches -1].vActivation) != max(resultatAttendu))
 	{
-		// calculdelta2
 		calculDelta(resultatAttendu);
-		//cout << vCouches[nbCouches-2].mPoids << endl;
+		miseAJour();
 		return false;
 	}
-	else
-	{
-		return true;
-	}
+	else return true;
 }
 
 VectorXd Reseau::retourLabel(int label)
 {
-
-	//cout << "Simu : " << typeSim << " | repAttendue : " << label << endl;
 	// récupération du resultat attendu
 	if (typeSim == 0) // bmp chien chat
 	{
 		VectorXd repAttendues(2);
 		repAttendues[label] = 1;
-		//cout << "On a remplis repAttendue" << endl;
 		return repAttendues;
 	}
 	else if(typeSim == 1) //lettres
 	{
 		VectorXd repAttendues(26);
 		repAttendues[label] = 1;
-		//cout << "On a remplis repAttendue" << endl;
 		return repAttendues;
 	}
 	else if(typeSim == 2) //chiffres
 	{
 		VectorXd repAttendues(10);
 		repAttendues[label] = 1;
-		//cout << "On a remplis repAttendue" << endl;
 		return repAttendues;
 	}
 	else exit(45) ;
@@ -310,28 +265,26 @@ void Reseau::entrainement(vector<VectorXd> setFichiers, vector<int> labels)
 	VectorXd label;
 	while(setFichiers.size() && labels.size()) //TOUS les fichiers
 	{
-		cout << "Sizes : " << setFichiers.size() << " " << labels.size() << endl;
 		VectorXd image = setFichiers.back();
 
-		cout << "On a le neurone rep : " << labels.back() <<  endl;
+		cout << "Neurone de sortie attendu : " << labels.back() <<  endl;
+		cout << "--------------------------------" << endl;
 		label = retourLabel(labels.back());
-		cout << "On a recup le res Attendu" << endl;
 		setFichiers.pop_back(); labels.pop_back();
 		verifRetro = false;
 		unsigned int tauxEchec = -1;
-		if((i != 33 && typeSim == 1) || ((i != 17 && (i!=18) && (i != 43)) && typeSim == 2))
-		{
+		//if((i != 33 && typeSim == 1) || ((i != 17) && (i!=18) && (i != 43) && typeSim == 2));
+		//{
 		while(!verifRetro)
 		{
-			cout << "Image et label sizes : " << image.size() << "/" << vCouches[0].nbNeurones << " " << label.size() << "/" << vCouches[nbCouches-1].nbNeurones << endl;
-			cout << "Loop : " << i << "/" << ma << endl;
-			verifRetro = this->retropropagation(image, label);
+			cout << "Image " << i << "/" << ma << endl;
+			verifRetro = retropropagation(image, label);
 			cout << "Activation : " << endl << vCouches[nbCouches-1].vActivation << endl;
 			tauxEchec++;
 		}
-		}
+		//}
 		i++;
-		cout << "on a fini un fichier" << endl;
+		cout << "Image apprise" << endl;
 		stats.push_back(tauxEchec); //calcul pour avoir le taux de reussite
 	}
 	cout << "On a fini l'entrainement" << endl;

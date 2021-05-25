@@ -44,45 +44,6 @@ MatrixXd aleaPoids(int nbNeuronesSuivants, int nbNeurones)
 	return mP;
 }
 
-VectorXd compressionVec(double* pixels, int height, int width, int nbNeurones)
-{
-	int hei, len;
-
-	double * temp = new double[height * width];
-	for(hei = 0; hei < height; hei++)
-	{
-		for(len = 0; len < width; len++)
-		{
-			temp[hei*width + len] = pixels[hei*width + len];
-		}
-	}
-
-	while(hei*len > nbNeurones)
-	{
-		hei--; len--;
-		for(int m = 0; m < hei; m++)
-		{
-			for(int n = 0; n < len; n++) 
-				temp[m*len + n] = (temp[m*len + n] + temp[(m+1)*len] + temp[m*len + n+1] + temp[(m+1)*len + n+1])/4; 
-		}
-	}
-	VectorXd v(nbNeurones);
-	for(int m = 0; m < hei; m++)
-	{
-		for(int n = 0; n < len; n++)
-		{
-			v(m*len + n) = temp[m*len + n];
-		}
-	}
-	int cp = hei*len;
-	while(cp++ < nbNeurones)
-	{
-		v(cp) = 0;
-	}
-	delete[](temp);
-	return v;
-}
-
 string toString(int resultatSimulation, int typeSim)
 {
 	if(typeSim==0) //Chien & Chats

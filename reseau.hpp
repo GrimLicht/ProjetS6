@@ -16,7 +16,10 @@ using namespace std;
 
 class Reseau
 {
-	public :
+	friend class MainWindow;
+	friend void sauvegardeRN(Reseau r, string chemin);
+
+	private :
 	unsigned int nbCouches;
 	vector<Couche> vCouches;
 	vector<unsigned int> stats;
@@ -31,12 +34,8 @@ class Reseau
 
 	//Setters/Getters
 	unsigned int getNbCouches();
-	vector<MatrixXd> getPoids();
+	//vector<MatrixXd> getPoids();
 	vector<unsigned int> getStats();
-
-	//Methode de tests
-	void printReseau();
-	MatrixXd multiply(MatrixXd m, VectorXd v);
 	
 	//Méthodes de RNU
 	//double sigmoide(double entree);
@@ -48,6 +47,7 @@ class Reseau
 
 	//Méthode d'apprentissage
 	double deriveeSigmoide(double sig);
+	void miseAJour();
 	void calculDelta(VectorXd resultatAttendu);
 	bool retropropagation(VectorXd entree, VectorXd resultatattendu);
 	void entrainement(vector<VectorXd> setFichiers, vector<int> reponsesAttendues);

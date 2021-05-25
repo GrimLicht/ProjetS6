@@ -1,9 +1,7 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-
 #include "gestionnaireMemoire.hpp"
-
 
 #include <QMainWindow>
 #include <QPushButton>
@@ -45,9 +43,6 @@ private:
     QString cheminDacces;    
     QLabel res;
 
-
-
-
 //Attribut ajouter pra rapport au cahier des spec
     bool paint;// pour maj le paintevent
     vector<VectorXd> uBiais;
@@ -62,7 +57,6 @@ private:
     QComboBox* typeSimulation;
     QDoubleSpinBox* tauxApp;
 
-    
 public:
     MainWindow();
     ~MainWindow(); 
@@ -74,11 +68,9 @@ public:
     
 protected:
     void paintEvent(QPaintEvent *event) override;
-    
-    
+
 //les slot qui n'ont pas ete ajouter au cahier des spec
 public slots:
-    
 
     //fenetre de saisi des parametre RN par user
     void sendToStructParam(); 
@@ -93,10 +85,6 @@ public slots:
     void quandOnSaveR();
     void quandOnSaveS();
     //slot pour chaque bouton
-   
-    
- 
 };
-
 
 #endif // MAINWINDOW_HPP

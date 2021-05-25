@@ -25,13 +25,9 @@ Couche::Couche(int nbNeurones, VectorXd vBiais)
 	this->error = new double[nbNeurones];
 }
 
-Couche::~Couche()
-{
-	//delete[](error);
-}
+Couche::~Couche() {/*delete[](error);*/}
 
 //Setters/Getters
-unsigned int Couche::getNbNeurones()
-{
-	return nbNeurones;
-}
+unsigned int Couche::getNbNeurones() { return nbNeurones; }
+double Couche::getPoids(int i, int j) { return mPoids(i, j); }
+double Couche::getBiais(int i) { return vBiais[i]; }

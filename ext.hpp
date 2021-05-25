@@ -24,9 +24,6 @@ struct Parametres
 	double tauxApprentissage;
 };
 
-struct Image;
-
-Eigen::VectorXd compressionVec(double* pixels, int height, int width, int nbNeurones);
 std::string toString(int resultatSimulation, int typeSim);
 Eigen::VectorXd aleaBiais(int nbNeurones);
 Eigen::MatrixXd aleaPoids(int nbNeurones, int nbNeuronesSuivants);
