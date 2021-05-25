@@ -63,10 +63,7 @@ Reseau::~Reseau()
 	{
 		vCouches.pop_back();
 	}
-	while(stats.size())
-	{
-		stats.pop_back();
-	}
+	stats.clear();
 }
 
 //Getteurs
@@ -280,48 +277,59 @@ bool Reseau::retropropagation(VectorXd entree, VectorXd resultatAttendu)
 VectorXd Reseau::retourLabel(int label)
 {
 
-	cout << "Simu : " << typeSim << " | repAttendue : " << label << endl;
+	//cout << "Simu : " << typeSim << " | repAttendue : " << label << endl;
 	// récupération du resultat attendu
 	if (typeSim == 0) // bmp chien chat
 	{
 		VectorXd repAttendues(2);
 		repAttendues[label] = 1;
-		cout << "On a remplis repAttendue" << endl;
+		//cout << "On a remplis repAttendue" << endl;
 		return repAttendues;
 	}
 	else if(typeSim == 1) //lettres
 	{
 		VectorXd repAttendues(26);
 		repAttendues[label] = 1;
-		cout << "On a remplis repAttendue" << endl;
+		//cout << "On a remplis repAttendue" << endl;
 		return repAttendues;
 	}
 	else if(typeSim == 2) //chiffres
 	{
 		VectorXd repAttendues(10);
 		repAttendues[label] = 1;
-		cout << "On a remplis repAttendue" << endl;
+		//cout << "On a remplis repAttendue" << endl;
 		return repAttendues;
 	}
-	else(exit(45));
+	else exit(45) ;
 }
 
 void Reseau::entrainement(vector<VectorXd> setFichiers, vector<int> labels)
 {
-	bool verifRetro = false;
-
-	while(setFichiers.size()) //TOUS les fichiers
+	bool verifRetro; int i = 0;
+	int ma = setFichiers.size();
+	VectorXd label;
+	while(setFichiers.size() && labels.size()) //TOUS les fichiers
 	{
+		cout << "Sizes : " << setFichiers.size() << " " << labels.size() << endl;
 		VectorXd image = setFichiers.back();
-		VectorXd label = retourLabel(labels.back());
-		setFichiers.pop_back(); labels.pop_back();
 
+		cout << "On a le neurone rep : " << labels.back() <<  endl;
+		label = retourLabel(labels.back());
+		cout << "On a recup le res Attendu" << endl;
+		setFichiers.pop_back(); labels.pop_back();
+		verifRetro = false;
 		unsigned int tauxEchec = -1;
 		while(!verifRetro)
 		{
+			cout << "Image et label sizes : " << image.size() << "/" << vCouches[0].nbNeurones << " " << label.size() << "/" << vCouches[nbCouches-1].nbNeurones << endl;
+			cout << "Loop : " << i << "/" << ma << endl;
 			verifRetro = this->retropropagation(image, label);
+			cout << "Activation : " << endl << vCouches[nbCouches-1].vActivation << endl;
 			tauxEchec++;
 		}
+		i++;
+		cout << "on a fini un fichier" << endl;
 		stats.push_back(tauxEchec);
 	}
+	cout << "On a fini l'entrainement" << endl;
 }

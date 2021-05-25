@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv)
 {
-	Parametres param;
+	/*Parametres param;
 	param.typeSim = 1;
 	param.nbCouches = 3;
 	param.nbNeuronesEntree = 28*28;
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	Reseau res(param);
 
 	//img = recupDonneesFileMNISTSimulation("emnist-letters-test-images-idx3-ubyte");
-	std::cout << "Starting point" << endl;
+	//std::cout << "Starting point" << endl;
 	std::vector<int> labels;
 
 	std::vector<VectorXd> entree = recupDonneesFileMNIST("MNIST/emnist-letters-train-images-idx3-ubyte", "MNIST/emnist-letters-train-labels-idx1-ubyte", &labels);
@@ -32,12 +32,14 @@ int main(int argc, char **argv)
 	bool verif = false;
 	res.simulation(entree.back());
 
-	while(!verif)
-	{
-		cout << "On passe part la retro : " << a << endl;
+	//while(!verif)
+	//{
+		//cout << "On passe part la retro : " << a << endl;
 		verif = res.retropropagation(entree.back(), MNISTAttendu);
-		cout << res.vCouches[res.nbCouches-1].vActivation << endl;
-	}
+		//cout << res.vCouches[res.nbCouches-1].vActivation << endl;
+	//}
+
+	sauvegardeRN(res, "../Backups/res2.txt");
 
 	//On supprime les couches
 	while(res.vCouches.size())
@@ -49,14 +51,14 @@ int main(int argc, char **argv)
 	//On supprime les stats
 	res.stats.clear();
 
-	return 0;
+	return 0;*/
 
 	//AFFICHAGE TEST
 
-	/*QApplication app (argc, argv);
+	QApplication app (argc, argv);
 	MainWindow w;
 	w.show();
 
 
-	return app.exec();*/
+	return app.exec();
 }

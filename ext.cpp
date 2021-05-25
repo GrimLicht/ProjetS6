@@ -16,7 +16,6 @@ VectorXd aleaBiais(int nbNeurones)
 	normal_distribution<double> nd(0.0, 1);
 
 	VectorXd vB(nbNeurones);
-
 	for(int i = 0; i < nbNeurones; i++)
 	{
 		vB(i) = nd(re);
@@ -32,15 +31,14 @@ MatrixXd aleaPoids(int nbNeuronesSuivants, int nbNeurones)
 	random_device rd;
 	default_random_engine re(rd());
 	normal_distribution<double> nd(0.0, 1);
-	
 	for(int i = 0; i < nbNeuronesSuivants; i++)
 	{
 		for(int j = 0; j < nbNeurones; j++)
 		{
 			
 			mP(i,j) = nd(re);
-			mP(i) += 4;
-			mP(i) /= 8;
+			mP(i,j) += 4;
+			mP(i,j) /= 8;
 		}
 	}
 	return mP;

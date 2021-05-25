@@ -52,7 +52,7 @@ private:
     bool paint;// pour maj le paintevent
     vector<VectorXd> uBiais;
     vector<MatrixXd> uPoids;
-    shared_ptr<Reseau> rUtilisation;//AAAAAAAAAAHHH
+    shared_ptr<Reseau> rUtilisation;
     Parametres p;
 
     //fenetrepara

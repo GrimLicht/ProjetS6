@@ -56,8 +56,9 @@ vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int>
 		numberOfColumns=reverseInt(numberOfColumns);
 
 		//Lecture de la valeur du pixel dans le fichier
-		for(int i=0; i<numberOfImages; ++i)
+		for(int i=0; i<100; ++i)
 		{
+			//out << i << endl;
 			//cout << "Image n. " << i << endl;
 			for(int r=0; r<numberOfRows; ++r)
 			{
@@ -95,11 +96,12 @@ vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int>
 		numberOfItems=reverseInt(numberOfItems);
 
 		//Lecture du label dans le fichier
-		for(int i=0; i<numberOfItems; ++i)
+		for(int i=0; i<100; ++i)
 		{
+			//cout << i << endl;
 			char temp2 = 0;
 			monFichier2.read(&temp2, sizeof(temp2));
-			labels->push_back((int)temp2);
+			labels->push_back((int)temp2 - 1);
 		}
 	}
 
@@ -161,14 +163,14 @@ VectorXd recupDonneesFileMNISTSimulation(string fImage)
 							sortie[r*28 + c] = valPixel / 255.0;
 
 							//Permet d'afficher correctement la matrice des pixels de l'image
-							if(cpt%28==0)
+							/*if(cpt%28==0)
 								cout << "\n";
 							if(valPixel>=0 && valPixel<=9)
 								cout << valPixel << "	 ";
 							else if(valPixel >=10 && valPixel <=99)
 								cout << valPixel << "	";
 							else if(valPixel >=100 && valPixel <= 999)
-								cout << valPixel << " ";
+								cout << valPixel << " ";*/
 
 							cpt++;
 						
@@ -436,7 +438,7 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 	string dirname;
 	vector<VectorXd> bmp;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 1000; i++)
 	{
 		cout << "Image : " << i << endl;
 		int choix;
@@ -482,7 +484,7 @@ vector<VectorXd> allImage(vector<int> *labels, string f, int nbneurones)
 		//Libere struct Image
 		delete[](img.pixel);
 	}
-	cout << "1000 done" << endl;
+	//cout << "1000 done" << endl;
 	return bmp;
 }
 
@@ -491,7 +493,7 @@ void sauvegardeStat(Reseau r, string chemin)
 {
     ofstream txt(chemin, ios::out | ios::ate); //passer le commentaire dans le constructeur en tant qu'argument si on veut ajouter du texte a la fin du fichier plutot que de l'ecraser pour sauvegarder
 
-    if (txt)
+    if (txt && chemin != "")
     {
         vector<unsigned int> vecStats = r.getStats();
         for (int i = 0; i < vecStats.size(); i++)
@@ -507,9 +509,9 @@ void sauvegardeStat(Reseau r, string chemin)
 
 void sauvegardeRN(Reseau r, string chemin)
 { //Adapter avec des getteurs
-
+	//cout << "On commence la sauvegarde" << endl;
 	ofstream fichier(chemin, ios::out | ios::trunc); //permet de supp le contenu du fichier avant l'écriture
-	if (fichier)									 // Si le fichier est ouvert
+	if (fichier && chemin != "")									 // Si le fichier est ouvert
 	{
 		//Structure paramètres sur la 1ère ligne
 		fichier << r.typeSim << " " << r.getNbCouches() << " " << r.vCouches[0].getNbNeurones() << " ";
@@ -544,6 +546,7 @@ void sauvegardeRN(Reseau r, string chemin)
 
 		//On a fini d'écrire dans le fichier
 		fichier.close();
+		//cout << "On a fini la sauvegarde" << endl;
 	}
 	else cout << "Erreur lors de l'enregistrement" << endl; // Si le fichier ne s'est pas ouvert
 }
