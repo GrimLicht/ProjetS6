@@ -355,7 +355,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::quandOnCharge()
 {
-	qDebug() << "Debut du chargement";
+	//qDebug() << "Debut du chargement";
 	//actions qui vont se produires quand on clique sur le bouton Charger!!
 	/*1*/
 	QMessageBox(QMessageBox::Information, "Information", "Vous vous apprêtez à sélectionner un fichier contenant une sauvegarde d'un Réseau", QMessageBox::Ok, this).exec();
@@ -365,9 +365,7 @@ void MainWindow::quandOnCharge()
 	{
 		/*2*/
 		/*On charge le reseau*/
-		qDebug() << "Avant charger RN";
 		auto pTemp = chargerRN(cheminDacces, &uPoids, &uBiais);
-		qDebug() << "ChargerRN";
 		/*3*/
 		/*On creer le reseau*/
 		shared_ptr<Reseau> temp(new Reseau(pTemp, uPoids, uBiais));
@@ -417,7 +415,6 @@ void MainWindow::quandOnCharge()
 		paint = true; // pour peinte event
 		update();
 	}
-	qDebug() << "Fin du chargement";
 }
 
 Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, vector<VectorXd> *vBiais)
@@ -435,7 +432,6 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
 	QTextStream data(&file);
 	while (!data.atEnd())
 	{
-		qDebug() <<" On repart par une boucle";
 		QString param = "";
 		QString c = "";
 
@@ -504,7 +500,7 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
 		k = 0;
 		for (unsigned int i = 0; i < p.nbCouches - 1; i++)
 		{ //-1 car la couche de sortie n'a pas de poids
-			qDebug() << "Matrice : " << i;
+			//qDebug() << "Matrice : " << i;
 			int taille1, taille2;
 			if (p.nbCouches == 2)
 			{
@@ -541,10 +537,8 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
 					param += c;
 					c = data.read(1);
 				}
-				if (c != '\n')
+				if (c != '\n' && (k < taille2) && (j < taille1))
 				{
-					qDebug() << "Taille Matrice : " << taille2 << "x" << taille1;
-					qDebug() << "i & j          : " << k << "x" << j;
 					h(k, j) = param.toDouble(); //la case j k de la matrice n° i CA MARCHE PAS
 					k++;
 
@@ -572,7 +566,7 @@ Parametres MainWindow::chargerRN(QString fichierTXT, vector<MatrixXd> *mPoids, v
 		}
 		for (int i = 0; i < p.nbCouches; i++)
 		{
-			qDebug() << "Vecteur : " << i;
+			//qDebug() << "Vecteur : " << i;
 			int taille1;
 			if (i == 0)
 			{
@@ -779,16 +773,14 @@ void MainWindow::quandOnLanceApprentissage()
 		}
 		else if (p.typeSim == 1) //si lettre
 		{
-			all = recupDonneesFileMNIST("MNIST/emnist-letters-train-images-idx3-ubyte", "MNIST/emnist-letters-train-labels-idx1-ubyte", &lab);
+			all = recupDonneesFileMNIST(p.typeSim, "MNIST/emnist-letters-train-images-idx3-ubyte", "MNIST/emnist-letters-train-labels-idx1-ubyte", &lab);
 		}
 		else if (p.typeSim == 2) //si chiffre
 		{
-			all = recupDonneesFileMNIST("MNIST/emnist-digits-train-images-idx3-ubyte", "MNIST/emnist-digits-train-labels-idx1-ubyte", &lab);
+			all = recupDonneesFileMNIST(p.typeSim, "MNIST/emnist-digits-train-images-idx3-ubyte", "MNIST/emnist-digits-train-labels-idx1-ubyte", &lab);
 		}
 		//lancer entrainement sur le réseau de l'interface
-		qDebug() << "On va passer par l'apprentissage";
 		rUtilisation->entrainement(all, lab);
-		qDebug() << "On est passe par l'apprentissage";
 		QMessageBox(QMessageBox::Information, "Félicitation", "L'apprentissage s'est terminé avec succès!", QMessageBox::Ok, this).exec();
 	}
 	else
@@ -872,12 +864,12 @@ void MainWindow::quandOnSaveR()
 	/*1*/
 	//creer le fichier dans le quelle on veut sauvegarder
 	cheminDacces = saveFileName();
-	qDebug() << cheminDacces;
+	//qDebug() << cheminDacces;
 	/*2*/
 	//lance la fonction de sauvegarde du reseau
 	if (cheminDacces != "")
 	{
-		qDebug() << "On va save reseau";
+		//qDebug() << "On va save reseau";
 		sauvegardeRN(*rUtilisation, cheminDacces.toStdString());
 	}
 }

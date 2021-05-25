@@ -25,7 +25,7 @@ int reverseInt(int i)
 
 
 /* Permet de récupérer les données du fichier MNIST et les stocker dans la struct MNIST */
-vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int> *labels)
+vector<VectorXd> recupDonneesFileMNIST(int typeSimu, string fImage, string fLabel, vector<int> *labels)
 {
 	vector<VectorXd> all;
 	VectorXd pixel(28*28);
@@ -56,7 +56,7 @@ vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int>
 		numberOfColumns=reverseInt(numberOfColumns);
 
 		//Lecture de la valeur du pixel dans le fichier
-		for(int i=0; i<100; ++i)
+		for(int i=0; i<numberOfImages; ++i)
 		{
 			//out << i << endl;
 			//cout << "Image n. " << i << endl;
@@ -96,12 +96,15 @@ vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int>
 		numberOfItems=reverseInt(numberOfItems);
 
 		//Lecture du label dans le fichier
-		for(int i=0; i<100; ++i)
+		for(int i=0; i<numberOfItems; ++i)
 		{
 			//cout << i << endl;
 			char temp2 = 0;
 			monFichier2.read(&temp2, sizeof(temp2));
-			labels->push_back((int)temp2 - 1);
+			cout << "Label : " << (int)temp2 <<endl;
+			int val = (int)temp2;
+			if(typeSimu == 1) val--;
+			labels->push_back(val);
 		}
 	}
 
@@ -326,6 +329,67 @@ void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHea
 	}
 }
 
+/* Permet de récupérer les données du fichier BMP et les stocker dans les struct BMPFileHeader et BMPImageHeader */
+/*VectorXd recupAnalyseDonneesBmp2 (string f, int nbNeurones)
+{	
+	char corrpitch[4] = {0,3,2,1};
+	int poubelle;
+	// ouverture du fichier 
+	fstream is;
+	is.open(f, ios::in|ios::binary);
+	cout <<"Le fichier est ouvert" << endl;
+	if(is.is_open())
+	{
+		//////////////////////////////////////////////
+		is.read(reinterpret_cast<char*>(&poubelle),18) ; 
+		///INUTILE JUSQUE LA
+
+		// lire la largeur 
+		int width; 
+		is.read(reinterpret_cast<char*>(&width),4); 
+
+		// lecture de la hauteur 
+		int height; 
+		is.read(reinterpret_cast<char*>(&height),4) ; 
+
+		is.read(reinterpret_cast<char*>(&poubelle),28) ;
+		cout << "Taille : " << height << " " << width << endl;
+		//cout << "///////////////////PIXEL///////////////////" << endl;
+		unsigned char rgb[3]; // un tableau contenant les trois composants R, G et B 
+		// allocation de mémoire : 
+		double *pixel = new double[width*height];
+		// le pitch est le nombre d'octet que prend une ligne => dans notre cas il faut que ça soit un multiple de 4 octets
+		int pitch=corrpitch[(3*width)%4];
+		//cout << "Height :" << height << endl;
+		//cout << "Width :" << width << endl;
+		for (int j=0; j<height; j++)
+		{
+			for(int i=0; i<width; i++)
+			{
+				// lecture et stockage dans rgb[]
+				is.read(reinterpret_cast<char*>(&rgb),3);
+				int lightness = rgb[2] + rgb[1] + rgb[0];
+				int exp1 = lightness / 8;
+				int man1 = lightness % 8;
+				int mantissa_bits = (1 << 23) + (man1 << 20) + (rgb[2] << 8) + rgb[1];
+				double multiplier = pow(2, exp1 - 119);
+				double rgb_encoding = mantissa_bits * multiplier; 
+				pixel[j*width + i] = rgb_encoding;
+			}
+			// lecture du pitch à ignorer 
+			is.read(reinterpret_cast<char*>(&rgb),pitch);
+		}
+		cout << "Avant la compression" << endl;
+		VectorXd v(nbNeurones);
+		v = compressionVec(pixel, height, width, nbNeurones);
+		cout << "Apres la compression" << endl;
+		delete[](pixel);
+		return v;
+	}
+	VectorXd v(0);
+	return v;
+}*/
+
 /* Permet de transférer les informations utiles de la structure BMPImageHeader à la structure Image */
 Image convertBitmapToImage(BitMapImageHeader b)
 {	
@@ -398,17 +462,11 @@ VectorXd allPixelBitMap(Image i, int nbNeurones)
 
 	//Passage d'un double** à un vecteur
 	VectorXd v(nbNeurones);
-	//cout << "i.pixel : " << i.pixel[0] << endl;
-	//cout << "Taille :" << endl;
-	//cout << "	Nb Neurones: " << nbNeurones << endl;
-	//cout << "	Height & Width : "<< i.Height << " " << i.Width << endl;
 	int cp = 0;
 	for(int a = 0; a < (int)i.Height; a++)
 	{
-		//cout << "A : " << a << endl;
 		for(int b = 0; b < (int)i.Width; b++)
 		{
-			//cout << "	B : " << b << endl;
 			v[cp] = i.pixel[a * i.Width + b];
 			cp++;
 		}
@@ -535,7 +593,6 @@ void sauvegardeRN(Reseau r, string chemin)
 		}
 
 		//Mettre tous les vBiais
-
 		for (int i = 0; i < r.getNbCouches(); i++) //pour chaque couche i qui sont sur chaque ligne i+1
 		{ 
 			for (int j = 0; j < r.vCouches[i].getNbNeurones(); j++)//pour chaque neurone j, copie des biais

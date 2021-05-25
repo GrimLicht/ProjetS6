@@ -51,9 +51,10 @@ struct Image
 
 //Méthodes du gestionnaire de mémoire
 int reverseInt(int i);
-vector<VectorXd> recupDonneesFileMNIST(string fImage, string fLabel, vector<int> *labels);
+vector<VectorXd> recupDonneesFileMNIST(int typeSimu, string fImage, string fLabel, vector<int> *labels);
 VectorXd recupDonneesFileMNISTSimulation(string fImage);
 void recupAnalyseDonneesBmp (string f, BitMapFileHeader *header , BitMapImageHeader *image);
+//VectorXd recupAnalyseDonneesBmp2 (string f, int nbNeurones);
 Image convertBitmapToImage(BitMapImageHeader b);
 Image compression(Image i, int nbNeurones);
 VectorXd allPixelBitMap(Image i, int nbNeurones);

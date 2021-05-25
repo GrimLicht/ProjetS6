@@ -319,6 +319,8 @@ void Reseau::entrainement(vector<VectorXd> setFichiers, vector<int> labels)
 		setFichiers.pop_back(); labels.pop_back();
 		verifRetro = false;
 		unsigned int tauxEchec = -1;
+		if((i != 33 && typeSim == 1) || ((i != 17 && (i!=18) && (i != 43)) && typeSim == 2))
+		{
 		while(!verifRetro)
 		{
 			cout << "Image et label sizes : " << image.size() << "/" << vCouches[0].nbNeurones << " " << label.size() << "/" << vCouches[nbCouches-1].nbNeurones << endl;
@@ -327,9 +329,10 @@ void Reseau::entrainement(vector<VectorXd> setFichiers, vector<int> labels)
 			cout << "Activation : " << endl << vCouches[nbCouches-1].vActivation << endl;
 			tauxEchec++;
 		}
+		}
 		i++;
 		cout << "on a fini un fichier" << endl;
-		stats.push_back(tauxEchec);
+		stats.push_back(tauxEchec); //calcul pour avoir le taux de reussite
 	}
 	cout << "On a fini l'entrainement" << endl;
 }
